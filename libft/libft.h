@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 10:04:18 by wchoe             #+#    #+#             */
-/*   Updated: 2024/12/30 01:58:03 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/01/03 15:47:16 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,5 @@ int		ft_printf(const char *format, ...);
 char	*get_next_line(int fd);
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_isspace(int c);
+void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 #endif

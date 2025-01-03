@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 22:53:55 by wchoe             #+#    #+#             */
-/*   Updated: 2024/12/29 23:15:47 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/01/03 15:55:21 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,19 +26,23 @@ char	*ms_getcwd(void)
 {
 	char	*path;
 	char	*buf;
+	void	*temp;
 	size_t	size;
 
 	size = BUFFER_SIZE;
+	buf = malloc(BUFFER_SIZE);
+	if (!buf)
+		return (NULL);
 	while (1)
 	{
-		buf = (char *)malloc(BUFFER_SIZE);
-		if (!buf)
-			return (NULL);
 		if (getcwd(buf, size))
 			break ;
-		free(buf);
-		if (size << 1 > (size_t)-1)
-			return (NULL);
+		if (size > (size_t)(-1) >> 1)
+			return (free(buf), NULL);
+		temp = ft_realloc(buf, size, size << 1);
+		if (!temp)
+			return (free(buf), NULL);
+		buf = temp;
 		size <<= 1;
 	}
 	path = ft_strdup(buf);
