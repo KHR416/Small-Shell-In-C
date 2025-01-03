@@ -1,29 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_args.h                                         :+:      :+:    :+:   */
+/*   ms_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/29 20:40:42 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/03 17:32:55 by chakim           ###   ########.fr       */
+/*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
+/*   Updated: 2025/01/03 17:40:14 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_ARGS_H
-# define GET_ARGS_H
-# include "../libft/libft.h"
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+#include "../include/get_args.h"
 
-typedef struct s_command
+int ms_echo(char **args)
 {
-	char	*cmd;
-	char	**args;
-} t_command;
-
-char		*rl_gets(void);
-t_command	*parse_input(char *input);
-int			is_valid_builtins(t_command *command);
-#endif
+    
+    return (0);
+}
