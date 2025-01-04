@@ -1,28 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/29 23:00:14 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/04 19:52:59 by wchoe            ###   ########.fr       */
+/*   Created: 2025/01/04 19:15:41 by wchoe             #+#    #+#             */
+/*   Updated: 2025/01/04 19:22:21 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
-# define SUCCESS	0
-# define FAILURE	1
+#include "minishell.h"
+#include <stdlib.h>
 
-typedef struct s_msvar
+#define WITHOUT_QUOTE	0
+#define SINGLE_QUOTE	1
+#define DOUBLE_QUOTE	2
+
+char	*expand(char *str)
 {
-	char	**envp;
-}	t_msvar;
+	int		quote_mode;
+	char	*buf;
+	size_t	size;
 
-char	*ms_getcwd(void);
-char	**ms_envpcpy(char **envp);
-void	ms_envp_destroy(void **arr);
-char	*ms_getenv(char *name, char **envp);
-int		ms_setenv(char *name, char *value, char ***envp);
-#endif	// MINISHELL_H
+	quote_mode = WITHOUT_QUOTE;
+	buf = malloc(BUFFER_SIZE);
+	if (!buf)
+		return (NULL);
+	size = BUFFER_SIZE;
+}

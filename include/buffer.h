@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   buffer.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/29 23:00:14 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/04 19:52:59 by wchoe            ###   ########.fr       */
+/*   Created: 2025/01/04 19:49:22 by wchoe             #+#    #+#             */
+/*   Updated: 2025/01/04 19:58:02 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
-# define SUCCESS	0
-# define FAILURE	1
+#ifndef BUFFER_H
+# define BUFFER_H
+# include <unistd.h>
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE	1024
+# endif	// BUFFER_SIZE
 
-typedef struct s_msvar
+typedef struct s_buf
 {
-	char	**envp;
-}	t_msvar;
+	char	*buffer;
+	size_t	length;
+	size_t	capacity;
+}	t_buf;
 
-char	*ms_getcwd(void);
-char	**ms_envpcpy(char **envp);
-void	ms_envp_destroy(void **arr);
-char	*ms_getenv(char *name, char **envp);
-int		ms_setenv(char *name, char *value, char ***envp);
-#endif	// MINISHELL_H
+t_buf	*create_buf(void);
+void	destroy_buf(t_buf *buf);
+void	clear_buf(t_buf *buf);
+int		realloc_buf(t_buf *buf, size_t new_cap);
+int		cat_buf(t_buf *buf, char *str);
+#endif	// BUFFER_H
