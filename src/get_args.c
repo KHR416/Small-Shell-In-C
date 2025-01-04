@@ -6,22 +6,20 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 20:38:11 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/03 17:34:11 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/04 20:39:46 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "../include/get_args.h"
+#include "get_args.h"
+#include "minishell.h"
 
 /*
 rl_gets() is readline from prompt and save histories wrote.
-is_valid_builtins(); checks if cmd is valid or not.
-if it is valid, it's parsed to exe_func and return 0. Unless, return 1 error code.
-The status value will get status of return code.
-There are 7 builtins to implement. only echo needs to do that with -n option.
-*/
 
+To avoid memory leaks, the returned string should be properly freed.
+*/
 char	*rl_gets(void)
 {
 	static char	*line_read;
@@ -57,21 +55,32 @@ t_command	*parse_input(char *input)
 	cmd->args = tokens;
 	return (cmd);
 }
-
-int	is_valid_builtins(t_command *command)
+/*
+	is_valid_builtins(); checks if cmd is valid or not.
+	if it is valid, it's parsed to exe_func and return 0. Unless, return error code.
+	There are 7 builtins to implement. only echo needs to do that with -n option.
+*/
+int	is_valid_builtins(t_command *command, t_msvar *var)
 {
-	if (ft_strcmp("echo", command->cmd) == 0)
-		return (ms_echo(command->args));
-	else if (ft_strcmp("cd", command->cmd) == 0)
+	if (ft_strcmp("echo", command->args[0]) == 0)
+	{
+		if (ft_strcmp("-n", command->args[1]) == 0)
+			return (ms_echo_n_option(command->args));
+		else
+			return (ms_echo(command->args));
+	}
+	else if (ft_strcmp("cd", command->args[0]) == 0)
 		return (ms_cd(command->args));
-	else if (ft_strcmp("export", command->cmd) == 0)
-		return (ms_export(command->args));
-	else if (ft_strcmp("unset", command->cmd) == 0)
+	else if (ft_strcmp("export", command->args[0]) == 0)
+		return (ms_export(command->args, var));
+	else if (ft_strcmp("unset", command->args[0]) == 0)
 		return (ms_unset(command->args));
-	else if (ft_strcmp("env", command->cmd) == 0)
-		return (ms_env(command->args));
-	else if (ft_strcmp("exit", command->cmd) == 0)
+	else if (ft_strcmp("env", command->args[0]) == 0)
+		return (ms_env(command->args, var));
+	else if (ft_strcmp("exit", command->args[0]) == 0)
 		return (ms_exit(command->args));
+	else if (ft_strcmp("pwd", command->args[0]) == 0)
+		return (ms_pwd());
 	else
-		return (1);
+		return (FAILURE);
 }

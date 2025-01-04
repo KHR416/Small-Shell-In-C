@@ -1,34 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_args.h                                         :+:      :+:    :+:   */
+/*   ms_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/29 20:40:42 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/04 20:00:49 by chakim           ###   ########.fr       */
+/*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
+/*   Updated: 2025/01/04 21:20:46 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_ARGS_H
-# define GET_ARGS_H
-# include "libft.h"
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+#include "get_args.h"
+#include "minishell.h"
 
-/*
-	assume cmd is total line of wrote in prompt,
-	args are preprocessed args.
-*/
-
-typedef struct s_command
+int	ms_env(char **args, t_msvar *var)
 {
-	char	*cmd;
-	char	**args;
-} t_command;
+	char **env;
 
-char		*rl_gets(void);
-t_command	*parse_input(char *input, char **envp);
-int			is_valid_builtins(t_command *command, char **envp);
-#endif
+	if (args[1] == NULL)
+	{
+		env = var->envp;
+		while(*env != NULL)
+		{
+			printf("%s\n", *env);
+			++env;
+		}
+		return (0);
+	}
+	else
+	{
+		// execute args[1] to args[n]
+	}
+}

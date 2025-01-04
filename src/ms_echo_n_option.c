@@ -1,34 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_args.h                                         :+:      :+:    :+:   */
+/*   ms_echo_n_option.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/29 20:40:42 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/04 20:00:49 by chakim           ###   ########.fr       */
+/*   Created: 2025/01/04 20:08:43 by chakim            #+#    #+#             */
+/*   Updated: 2025/01/04 21:20:29 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_ARGS_H
-# define GET_ARGS_H
-# include "libft.h"
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+#include "get_args.h"
+#include "minishell.h"
 
 /*
-	assume cmd is total line of wrote in prompt,
-	args are preprocessed args.
+	This fuction does almost same thing with ms_echo,
+	but print nothing after print last argument.
 */
-
-typedef struct s_command
+int	ms_echo_n_option(char **args)
 {
-	char	*cmd;
-	char	**args;
-} t_command;
+	int	i;
 
-char		*rl_gets(void);
-t_command	*parse_input(char *input, char **envp);
-int			is_valid_builtins(t_command *command, char **envp);
-#endif
+	if (args[2] == NULL)
+		return (SUCCESS);
+	i = 1;
+	while (ft_strcmp("-n", args[i]) == 0)
+		++i;
+	while (args[i + 1] != NULL)
+	{
+		printf("%s ", args[i]);
+		++i;
+	}
+	printf("%s", args[i]);
+	return (SUCCESS);
+}

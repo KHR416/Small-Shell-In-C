@@ -1,34 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_args.h                                         :+:      :+:    :+:   */
+/*   ms_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/29 20:40:42 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/04 20:00:49 by chakim           ###   ########.fr       */
+/*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
+/*   Updated: 2025/01/04 21:30:39 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_ARGS_H
-# define GET_ARGS_H
-# include "libft.h"
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+#include "get_args.h"
+#include "minishell.h"
 
-/*
-	assume cmd is total line of wrote in prompt,
-	args are preprocessed args.
-*/
-
-typedef struct s_command
+static void	print_all_env(char **args, t_msvar *var)
 {
-	char	*cmd;
-	char	**args;
-} t_command;
+	char	**env;
+	char	*line;
 
-char		*rl_gets(void);
-t_command	*parse_input(char *input, char **envp);
-int			is_valid_builtins(t_command *command, char **envp);
-#endif
+	env = var->envp;
+	while(*env != NULL)
+	{
+		printf("declare -x %s=""%s""", );
+		++env;
+	}
+}
+
+int	ms_export(char **args, t_msvar *var)
+{
+	if (args[1] == NULL)
+	{
+		print_all_env(args, var);
+		return (SUCCESS);
+	}
+	else
+	{
+		// execute args[1] to args[n]
+	}
+}
