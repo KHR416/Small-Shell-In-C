@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 22:53:55 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/04 21:27:29 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/01/05 20:58:42 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ and not fitted null-terminated string if last reallocation fails.
 */
 char	*ms_getcwd(void)
 {
-	char	*path;
 	t_buf	*buf;
 
 	buf = create_buf();
@@ -64,11 +63,8 @@ char	*ms_getcwd(void)
 		if (realloc_buf(buf, buf->capacity << 1))
 		{
 			destroy_buf(buf);
-			return (FAILURE);
+			return (NULL);
 		}
 	}
-	realloc_buf(buf, ft_strlen(buf->buffer) + 1);
-	path = buf->buffer;
-	free(buf);
-	return (path);
+	return (detach_buf(buf));
 }

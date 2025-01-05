@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   envp.c                                             :+:      :+:    :+:   */
+/*   envp_0.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 15:50:57 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/04 19:35:35 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/05 20:25:07 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,63 +93,4 @@ char	*ms_getenv(char *name, char **envp)
 		++envp_idx;
 	}
 	return (NULL);
-}
-
-static char	*create_new_env(char *name, char *value)
-{
-	char	*env;
-	size_t	name_len;
-	size_t	value_len;
-
-	name_len = ft_strlen(name);
-	value_len = ft_strlen(value);
-	env = malloc(name_len + value_len + 2);
-	if (!env)
-		return (NULL);
-	ft_strlcpy(env, name, name_len + 1);
-	ft_strlcat(env, "=", name_len + value_len + 2);
-	ft_strlcat(env, value, name_len + value_len + 2);
-	return (env);
-}
-
-/*
-ms_setenv - Set or update an environment variable in the environment array.
-
-This function searches for an environment variable with the specified `name`
-within the NULL-terminated array of environment variables (`envp`).
-If the variable is found, its value is updated to the provided `value`.
-If the variable does not exist, the environment array is reallocated to
-accommodate the new variable, which is then added to the array.
-
-This function returns `SUCCESS` (0) if the operation completes without errors or
-`FAILURE` (1) if a memory allocation error occurs or if the new environment
-variable cannot be created.
-*/
-int	ms_setenv(char *name, char *value, char ***envp)
-{
-	size_t	name_len;
-	size_t	envp_idx;
-	void	*temp;
-
-	name_len = ft_strlen(name);
-	envp_idx = -1;
-	while ((*envp)[++envp_idx])
-		if (!ft_memcmp(name, (*envp)[envp_idx], name_len))
-			break ;
-	if (!(*envp)[envp_idx])
-	{
-		temp = ft_realloc(*envp, sizeof(size_t) * (envp_idx + 1),
-				sizeof(size_t) * (envp_idx + 2));
-		if (!temp)
-			return (FAILURE);
-		*envp = temp;
-		(*envp)[envp_idx + 1] = NULL;
-	}
-	temp = create_new_env(name, value);
-	if (!temp)
-		return (FAILURE);
-	if ((*envp)[envp_idx])
-		free((*envp)[envp_idx]);
-	(*envp)[envp_idx] = temp;
-	return (SUCCESS);
 }

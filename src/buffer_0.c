@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   buffer.c                                           :+:      :+:    :+:   */
+/*   buffer_0.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 19:23:04 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/04 20:43:46 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/01/05 19:41:37 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "buffer.h"
 #include "minishell.h"
 #include <libft.h>
+#include <stdlib.h>
 
 /*
 create_buf - Allocates and initializes a new buffer.
@@ -30,7 +31,9 @@ buffer fails.
 
 NOTES
 Every buffer created by this function must be properly deallocated using
-the `destroy_buf` function to prevent memory leaks.
+the `destroy_buf` or `detach_buf` function to prevent memory leaks. When using
+the `detach_buf` function, the returned internal buffer must be freed
+separately.
 */
 t_buf	*create_buf(void)
 {
@@ -139,13 +142,14 @@ This function appends the given string `str` to the internal buffer of the
 internal buffer remains null-terminated after concatenation. If the current
 capacity of the buffer is insufficient to accommodate the concatenated data,
 the buffer is reallocated to a larger size to fit the new data.
+If `str` is `NULL`, This function do nothing and return `SUCCESS`.
 
 RETURN
-`SUCCESS` (0) on successful concatenation.
+`SUCCESS` (0) on successful concatenation or `str` is `NULL`
 `FAILURE` (1) if memory reallocation fails.
 
 NOTES
-This function may cause segmentation fault if `buf` or `str` is `NULL`.
+This function may cause segmentation fault if `buf` is `NULL`.
 This function can also be used to copy a string into the buffer. It is
 recommended to use this function immediately after calling `clear_buf`
 if you intend to overwrite the buffer.
@@ -155,6 +159,8 @@ int	cat_buf(t_buf *buf, char *str)
 	size_t	len;
 	size_t	new_cap;
 
+	if (!str)
+		return (SUCCESS);
 	len = ft_strlen(str);
 	if (buf->capacity < buf->length + len + 1)
 	{
@@ -169,5 +175,6 @@ int	cat_buf(t_buf *buf, char *str)
 			return (FAILURE);
 	}
 	ft_strlcat(buf->buffer, str, buf->capacity);
+	buf->length += len;
 	return (SUCCESS);
 }
