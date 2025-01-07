@@ -6,11 +6,11 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/04 21:30:39 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/06 09:02:18 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_args.h"
+#include "builtin.h"
 #include "minishell.h"
 
 static void	print_all_env(char **args, t_msvar *var)

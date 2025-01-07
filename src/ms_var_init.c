@@ -1,34 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_args.h                                         :+:      :+:    :+:   */
+/*   ms_var_init.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/29 20:40:42 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/04 20:00:49 by chakim           ###   ########.fr       */
+/*   Created: 2025/01/07 19:22:59 by chakim            #+#    #+#             */
+/*   Updated: 2025/01/07 19:28:06 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_ARGS_H
-# define GET_ARGS_H
-# include "libft.h"
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+#include "minishell.h"
 
-/*
-	assume cmd is total line of wrote in prompt,
-	args are preprocessed args.
-*/
-
-typedef struct s_command
+void	ms_var_init(int argc, char **argv, char **envp, t_msvar *var)
 {
-	char	*cmd;
-	char	**args;
-} t_command;
-
-char		*rl_gets(void);
-t_command	*parse_input(char *input, char **envp);
-int			is_valid_builtins(t_command *command, char **envp);
-#endif
+	var->argc = argc;
+	var->argv = ms_envpcpy(envp);
+	var->envp = envp;
+}

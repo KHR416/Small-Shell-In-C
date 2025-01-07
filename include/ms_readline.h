@@ -1,25 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ms_pwd.c                                           :+:      :+:    :+:   */
+/*   ms_readline.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/06 09:02:05 by chakim           ###   ########.fr       */
+/*   Created: 2024/12/29 20:40:42 by chakim            #+#    #+#             */
+/*   Updated: 2025/01/07 19:04:11 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-/*
-This function prints absolute current directory.
-*/
-void	ms_pwd(void)
-{
-	char	*cur_dir;
+#ifndef MS_READLINE_H
+# define MS_READLINE_H
+# include "libft.h"
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
-	cur_dir = ms_getcwd();
-	printf("%s\n", cur_dir);
-	free(cur_dir);
-	return (SUCCESS);
-}
+/*
+	assume cmd is total line of wrote in prompt,
+	args are preprocessed args.
+*/
+typedef struct s_command
+{
+	char	*cmd;
+	char	**args;
+} t_command;
+
+char		*rl_gets(void);
+#endif
