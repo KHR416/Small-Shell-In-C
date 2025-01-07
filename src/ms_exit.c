@@ -6,10 +6,14 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 21:23:33 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 19:03:50 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/07 20:27:38 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
 #include "minishell.h"
 
+int	ms_exit(char **args)
+{
+	;
+}

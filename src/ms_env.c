@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 18:30:19 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/07 20:27:32 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	ms_env(char **args, t_msvar *var)
 	if (args[i] == NULL)
 	{
 		env = var->envp;
-		while(*env != NULL)
+		while (*env != NULL)
 		{
 			printf("%s\n", *env);
 			++env;

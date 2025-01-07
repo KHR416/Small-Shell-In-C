@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/06 09:02:18 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/07 20:28:46 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void	print_all_env(char **args, t_msvar *var)
 	char	*line;
 
 	env = var->envp;
-	while(*env != NULL)
+	while (*env != NULL)
 	{
 		printf("declare -x %s=""%s""", );
 		++env;

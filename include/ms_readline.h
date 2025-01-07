@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 20:40:42 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 19:04:11 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/07 20:30:11 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 /*
 	assume cmd is total line of wrote in prompt,
@@ -27,7 +27,8 @@ typedef struct s_command
 {
 	char	*cmd;
 	char	**args;
-} t_command;
+}	t_command;
 
-char		*rl_gets(void);
+char	*rl_gets(void);
+
 #endif

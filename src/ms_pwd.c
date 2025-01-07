@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/06 09:02:05 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/07 20:24:13 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 /*
 This function prints absolute current directory.
 */
-void	ms_pwd(void)
+int	ms_pwd(void)
 {
 	char	*cur_dir;
 

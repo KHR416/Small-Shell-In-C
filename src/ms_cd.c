@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 18:26:20 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/07 20:27:13 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int	cd_error_checker(char **args)
 
 static char	*set_to_parent_dir(char *abs_path)
 {
-	char 	*result;
+	char	*result;
 	size_t	diff;
 
 	diff = (size_t)(abs_path - ft_strrchr(abs_path, '/'));
