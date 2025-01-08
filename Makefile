@@ -17,7 +17,8 @@ endif
 LDFLAGS := -Llib -lft -lreadline
 
 # TODO: Write all source files
-SRC :=
+
+SRC := 
 OBJ := $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
 
 vpath %.c $(SRC_DIR)

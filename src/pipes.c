@@ -6,12 +6,11 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 20:29:23 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 20:29:26 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 14:51:45 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipes.h"
-#include "minishell.h"
 
 static void	create_pipes(t_pipes *pipes)
 {
@@ -41,7 +40,7 @@ static void	create_processes(t_pipes *pipes, t_msvar *var)
 		if (pipes->pids[i] == -1)
 		{
 			perror("fork");
-			destoy_pipes(pipes);
+			destroy_pipes(pipes);
 			exit(1);
 		}
 		if (pipes->pids[i] == 0)

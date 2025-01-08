@@ -6,12 +6,11 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 20:13:32 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 19:19:41 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 14:52:12 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipes.h"
-#include "minishell.h"
 
 static int	setup_input_and_redirection(t_pipes *pipes, char *filename)
 {

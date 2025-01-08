@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/06 09:01:14 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 14:52:21 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	ms_echo(char **args)
 
 	if (args[1] == NULL)
 	{
-		printf('\n');
+		printf("\n");
 		return (SUCCESS);
 	}
 	i = 1;

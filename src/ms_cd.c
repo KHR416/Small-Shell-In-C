@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 20:27:13 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 15:20:27 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,19 @@ static char	*set_to_parent_dir(char *abs_path)
 	return (result);
 }
 
+static int	how_many_dots(char **args)
+{
+	int	count;
+
+	count = ft_strlen(args[1]);
+	if (count == 1 || args[1][0] == '.')
+		return (1);
+	else if (ft_strcmp(args[1], "..") == 0)
+		return (2);
+	else
+		return (0);
+}
+
 /*
 	this fuction go to absolute directory if it's valid.
 	If there is an error, return FAILURE.
@@ -53,16 +66,17 @@ int	ms_cd(char **args)
 {
 	char	*abs_path;
 
-	if (cd_error_checker(args) && (args[1] != '.' || args[1] != '..'))
+	abs_path = NULL;
+	if (cd_error_checker(args) && !how_many_dots(args))
 		return (cd_error_checker(args));
-	if (args[1] == '.')
+	if (how_many_dots(args) == 1 || args[1][0] == '.')
 		abs_path = ms_getcwd();
-	else if (args[1] == '..')
+	else if (ft_strcmp(args[1], "..") == 0)
 		abs_path = set_to_parent_dir(abs_path);
 	else
 		abs_path = args[1];
 	if (!abs_path)
-		return (NULL);
+		return (FAILURE);
 	if (chdir(abs_path) == -1)
 	{
 		free(abs_path);

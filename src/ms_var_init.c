@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 19:22:59 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 20:24:16 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 12:43:46 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,6 @@
 void	ms_var_init(int argc, char **argv, char **envp, t_msvar *var)
 {
 	var->argc = argc;
-	var->argv = ms_envpcpy(envp);
-	var->envp = envp;
+	var->argv = argv;
+	var->envp = ms_envpcpy(envp);
 }

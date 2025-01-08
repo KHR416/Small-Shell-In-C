@@ -6,12 +6,11 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:58:20 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 20:16:10 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 15:21:06 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
-#include "minishell.h"
 /*
 	is_valid_builtins(); checks if cmd is valid or not.
 	if it is valid, it's parsed to exe_func and return 0. Unless, return error code.

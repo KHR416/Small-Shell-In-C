@@ -6,10 +6,12 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 20:24:13 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 14:24:11 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "minishell.h"
 /*
 This function prints absolute current directory.

@@ -6,12 +6,11 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:54:37 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/07 19:11:38 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 14:51:53 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipes.h"
-#include "minishell.h"
 
 void	init_pipes(t_pipes *pipes, t_msvar *var)
 {
