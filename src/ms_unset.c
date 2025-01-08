@@ -6,12 +6,11 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 21:23:36 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/08 15:20:13 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 16:58:08 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
-#include "minishell.h"
 
 int	ms_unset(char **args)
 {

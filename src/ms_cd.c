@@ -6,28 +6,27 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/08 15:20:27 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 22:20:01 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
-#include "minishell.h"
 
 static int	cd_error_checker(char **args)
 {
 	if (args[2])
 	{
-		printf("cd: too many arguments\n");
+		printf("minishell: cd: too many arguments\n");
 		return (FAILURE);
 	}
 	if (access(args[1], F_OK) == -1)
 	{
-		printf("cd: %s: No such file or directory\n", args[1]);
+		printf("minishell: cd: %s: No such file or directory\n", args[1]);
 		return (127);
 	}
 	else if (access(args[1], R_OK) == -1)
 	{
-		printf("cd: %s: Permission denied\n", args[1]);
+		printf("minishell: cd: %s: Permission denied\n", args[1]);
 		return (126);
 	}
 	return (SUCCESS);
