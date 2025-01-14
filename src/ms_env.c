@@ -6,11 +6,25 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/08 18:09:28 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/14 18:39:17 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
+
+static int	is_equal_exist(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == '=')
+			return (SUCCESS);
+		i++;
+	}
+	return (FAILURE);
+}
 
 int	ms_env(char **args, t_msvar *var)
 {
@@ -20,20 +34,21 @@ int	ms_env(char **args, t_msvar *var)
 
 	arr = "env";
 	i = 0;
-	while (strcmp(args[i], arr) == 0)
+	while (ft_strcmp(args[i], arr) == 0)
 		i++;
 	if (args[i] == NULL)
 	{
 		env = var->envp;
 		while (*env != NULL)
 		{
-			printf("%s\n", *env);
+			if (is_equal_exist(*env))
+				printf("%s\n", *env);
 			++env;
 		}
 		return (SUCCESS);
 	}
 	else
 	{
-		return 0;
+		while ()
 	}
 }
