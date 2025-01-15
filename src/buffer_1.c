@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/05 18:36:51 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/05 19:25:20 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/01/14 22:23:29 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,19 @@ char	*detach_buf(t_buf *buf)
 	str = buf->buffer;
 	free(buf);
 	return (str);
+}
+
+int	append_buf(t_buf *buf, char c)
+{
+	if (buf->capacity < buf->length + 2)
+	{
+		if (buf->capacity > (size_t)(-1) >> 1)
+			return (FAILURE);
+		if (realloc_buf(buf, buf->capacity << 1))
+			return (FAILURE);
+	}
+	buf->buffer[buf->length] = c;
+	++buf->length;
+	buf->buffer[buf->length] = '\0';
+	return (SUCCESS);
 }

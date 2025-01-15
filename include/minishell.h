@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 23:00:14 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/08 12:23:09 by chakim           ###   ########.fr       */
+/*   Updated: 2025/01/08 15:31:06 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ char	**ms_envpcpy(char **envp);
 void	ms_envp_destroy(void **arr);
 char	*ms_getenv(char *name, char **envp);
 int		ms_setenv(char *name, char *value, char ***envp);
-void	ms_var_init(int argc, char **argv, char **envp, t_msvar *var);
+int		ms_var_init(int argc, char **argv, char **envp, t_msvar *var);
 
 #endif	// MINISHELL_H

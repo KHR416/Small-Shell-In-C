@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 19:49:22 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/05 19:22:41 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/01/14 22:23:40 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,6 @@ void	destroy_buf(t_buf *buf);
 void	clear_buf(t_buf *buf);
 int		realloc_buf(t_buf *buf, size_t new_cap);
 int		cat_buf(t_buf *buf, char *str);
+int		append_buf(t_buf *buf, char c);
 char	*detach_buf(t_buf *buf);
 #endif	// BUFFER_H
