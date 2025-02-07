@@ -1,27 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstclear.c                                      :+:      :+:    :+:   */
+/*   ft_lstpush_back.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/26 14:17:58 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/06 20:00:09 by wchoe            ###   ########.fr       */
+/*   Created: 2025/02/06 15:26:02 by wchoe             #+#    #+#             */
+/*   Updated: 2025/02/06 15:31:01 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_lstclear(t_list **lst, void (*del)(void *))
+int	ft_lstpush_back(t_list **lst, void *content)
 {
-	t_list	*next_node;
+	t_list	*new_node;
 
-	if (!lst)
-		return ;
-	while (*lst)
-	{
-		next_node = (*lst)->next;
-		ft_lstdelone(*lst, del);
-		*lst = next_node;
-	}
+	new_node = ft_lstnew(content);
+	if (!new_node)
+		return (1);
+	ft_lstadd_back(lst, new_node);
+	return (0);
 }

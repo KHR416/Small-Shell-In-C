@@ -7,11 +7,12 @@ endif
 SRC_DIR := src
 PRINTF_SRC_DIR := $(SRC_DIR)/ft_printf
 GNL_SRC_DIR := $(SRC_DIR)/get_next_line
+DEBUG_SRC_DIR := $(SRC_DIR)/debug
 OBJ_DIR := obj
 
 LIBFT := libft.a
 
-SRC := \
+SRC = \
 	ft_atoi.c\
 	ft_bzero.c\
 	ft_calloc.c\
@@ -40,10 +41,8 @@ SRC := \
 	ft_putendl_fd.c\
 	ft_putnbr_fd.c\
 	ft_putstr_fd.c\
-	ft_realloc.c\
 	ft_split.c\
 	ft_strchr.c\
-	ft_strcmp.c\
 	ft_strdup.c\
 	ft_striteri.c\
 	ft_strjoin.c\
@@ -72,10 +71,16 @@ SRC := \
 	struct_utils.c\
 	utils.c\
 	get_next_line.c\
-	get_next_line_utils.c
+	get_next_line_utils.c\
+	ft_realloc.c\
+	ft_lstpush_back.c
+ifdef DEBUG
+SRC += \
+	ft_lst_print.c
+endif
 OBJ := $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
 
-vpath %.c $(SRC_DIR) $(PRINTF_SRC_DIR) $(GNL_SRC_DIR)
+vpath %.c $(SRC_DIR) $(PRINTF_SRC_DIR) $(GNL_SRC_DIR) $(DEBUG_SRC_DIR)
 
 .PHONY: all clean fclean re
 

@@ -12,13 +12,22 @@ MINISHELL := minishell
 CC := cc
 CFLAGS = -Wall -Wextra -Werror -I$(INC_DIR)
 ifdef DEBUG
-	CFLAGS += -g
+	CFLAGS += -g -D DEBUG
 endif
 LDFLAGS := -Llib -lft -lreadline
 
 # TODO: Write all source files
 
-SRC := 
+SRC := \
+	analyzer.c\
+	buffer_0.c\
+	buffer_1.c\
+	envp_0.c\
+	envp_1.c\
+	readline.c\
+	tokenizer.c\
+	ceu.c\
+	pipe_seg.c
 OBJ := $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
 
 vpath %.c $(SRC_DIR)
@@ -59,6 +68,18 @@ $(LIBFT): | $(LIBFT_DIR) $(LIB_DIR)
 
 $(LIBFT_HDR) : $(LIBFT_DIR)
 	cp $(LIBFT_DIR)/libft.h $(LIBFT_HDR)
+
+test_token:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c test/token_main.c -o obj/test_token_main.o
+	$(CC) $(OBJ) obj/test_token_main.o $(LDFLAGS)
+
+test_ceu:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c test/ceu_main.c -o obj/test_ceu_main.o
+	$(CC) $(OBJ) obj/test_ceu_main.o $(LDFLAGS)
+
+test_pipe_seg:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c test/pipe_seg_main.c -o obj/test_pipe_seg.o
+	$(CC) $(OBJ) obj/test_pipe_seg.o $(LDFLAGS)
 
 # bonus:
 # TODO: Complete dependencies and recipes
