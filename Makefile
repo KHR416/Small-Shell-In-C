@@ -3,6 +3,7 @@ INC_DIR := include
 SRC_DIR := src
 OBJ_DIR := obj
 LIBFT_DIR := libft
+TEST_SRC_DIR := test
 
 LIBFT := $(LIB_DIR)/libft.a
 LIBFT_HDR := $(INC_DIR)/libft.h
@@ -27,7 +28,10 @@ SRC := \
 	readline.c\
 	tokenizer.c\
 	ceu.c\
-	pipe_seg.c
+	pipe_seg.c\
+	ceu_exec.c\
+	ms_var_init.c\
+	pipe_seg_exec.c
 OBJ := $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
 
 vpath %.c $(SRC_DIR)
@@ -70,16 +74,24 @@ $(LIBFT_HDR) : $(LIBFT_DIR)
 	cp $(LIBFT_DIR)/libft.h $(LIBFT_HDR)
 
 test_token:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c test/token_main.c -o obj/test_token_main.o
-	$(CC) $(OBJ) obj/test_token_main.o $(LDFLAGS)
+	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
+	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
 
 test_ceu:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c test/ceu_main.c -o obj/test_ceu_main.o
-	$(CC) $(OBJ) obj/test_ceu_main.o $(LDFLAGS)
+	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
+	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
 
 test_pipe_seg:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c test/pipe_seg_main.c -o obj/test_pipe_seg.o
-	$(CC) $(OBJ) obj/test_pipe_seg.o $(LDFLAGS)
+	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
+	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
+
+test_ceu_exec:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
+	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
+
+test_pipe_seg_exec:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
+	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
 
 # bonus:
 # TODO: Complete dependencies and recipes

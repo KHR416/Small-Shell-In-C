@@ -6,13 +6,14 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/06 20:30:57 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/12 21:31:41 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CEU_H
 # define CEU_H
 # include "token.h"
+# include "minishell.h"
 # include <libft.h>
 
 typedef enum e_input_redirection_type
@@ -59,6 +60,8 @@ void		destroy_out_redir(void *or_list);
 void		destroy_argv(char **argv);
 void		destroy_ceu(void *ceu);
 t_ceu		*create_ceu(t_token *iter_begin, t_token *iter_end);
+void		ceu_exec(t_ceu *ceu, t_msvar *msvar);
+
 # ifdef DEBUG
 
 int			print_in_redir(t_in_redir *ir);

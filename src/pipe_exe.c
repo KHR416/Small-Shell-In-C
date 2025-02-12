@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 15:48:26 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/12 17:12:22 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/12 21:03:38 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 #include "pipe_seg.h"
 #include "minishell.h"
 #include "sys/types.h"
+#include "stdlib.h"
+#include "stdio.h"
+#include "sys/wait.h"
 
 void	close_fd_if_valid(int fd) 
 {
@@ -25,7 +28,8 @@ int	execute_child_process(t_ceu *ceu, t_msvar *var, int pipefd[2], size_t i, siz
 {
 	int exe_result;
 
-	exe_result = ceu_exec(ceu, var);
+
+	exe_result = ceu_exec(ceu, var); // this ceu_exec func need to be implemented
 	if (i < pipe_cnt)
 	{
 		close_fd_if_valid(pipefd[0]);

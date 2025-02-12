@@ -9,18 +9,25 @@ int	main(int argc, char **argv, char **envp)
 {
 	char			*str;
 	t_token_stream	*ts;
+	t_pipe_seg		*ps;
+	t_msvar			msvar;
 
-	++argc;
-	++argv;
+	ms_var_init(argc, argv, envp, &msvar);
 	while (1)
 	{
-		if (!(str = readline("> ")))
+		if (!(str = readline("$ ")))
 			break ;
 		add_history(str);
-		ts = tokenizer(str, envp);
+		ts = tokenizer(str, &msvar);
 		free(str);
-		print_token_stream(ts);
+		if (ts->len)
+		{
+			ps = create_pipe_seg(ts->arr, ts->arr + ts->len);
+			print_pipe_seg(ps);
+			destroy_pipe_seg(ps);
+		}
 		destroy_token_stream(ts);
 	}
+	free_msvar(&msvar);
 	return (EXIT_SUCCESS);
 }

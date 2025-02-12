@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:08:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/06 21:00:41 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/10 19:34:35 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define TOKEN_H
 # include <unistd.h>
 # include "buffer.h"
+# include "minishell.h"
 
 typedef enum e_token_type
 {
@@ -56,8 +57,8 @@ void	destroy_token_stream(t_token_stream *stream);
 int	realloc_token_stream(t_token_stream *stream, size_t new_cap);
 int	append_token_stream(t_token_stream *stream, t_token_type type, char *data);
 char	*get_path_name(char *str);
-size_t	expand_dollar_sign(t_buf *buf, char *str, char **envp);
-t_token_stream	*tokenizer(char *str, char **envp);
+size_t	expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar);
+t_token_stream	*tokenizer(char *str, t_msvar *msvar);
 void	print_token(t_token *t);
 void	print_token_stream(t_token_stream *ts);
 void	print_error_unexpected_token(t_token_type t);

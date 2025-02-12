@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   envp_0.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 15:50:57 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/06 08:23:11 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/10 17:32:25 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ individual string within the array. After all strings have been freed, the array
 itself is also freed. This effectively destroys the entire environment variables
 array, ensuring that all allocated memory is properly released.
 */
-void	ms_envp_destroy(void **envp)
+void	ms_envp_destroy(char **envp)
 {
 	size_t	idx;
 
@@ -61,7 +61,7 @@ char	**ms_envpcpy(char **envp)
 		copy[idx] = ft_strdup(envp[idx]);
 		if (!copy[idx])
 		{
-			ms_envp_destroy((void **)copy);
+			ms_envp_destroy(copy);
 			return (NULL);
 		}
 		++idx;

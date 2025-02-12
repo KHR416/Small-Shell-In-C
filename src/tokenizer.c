@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:06:42 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/27 01:06:31 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/12 21:31:29 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ char	*get_path_name(char *str)
 	return (name);
 }
 
-size_t	expand_dollar_sign(t_buf *buf, char *str, char **envp)
+size_t	expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar)
 {
 	char	*env_name;
 	size_t	padding;
@@ -123,13 +123,17 @@ size_t	expand_dollar_sign(t_buf *buf, char *str, char **envp)
 	++str;
 	if (*str == '?')
 	{
-		cat_buf(buf, "EXIT_STATUS");
+		if (msvar->wstatus >= 100)
+			append_buf(buf, msvar->wstatus / 100 + '0');
+		if (msvar->wstatus >= 10)
+			append_buf(buf, msvar->wstatus / 10 % 10 + '0');
+		append_buf(buf, msvar->wstatus % 10 + '0');
 		padding = 1;
 	}
 	else if (ft_isalpha(*str) || *str == '_')
 	{
 		env_name = get_path_name(str);
-		cat_buf(buf, ms_getenv(env_name, envp));
+		cat_buf(buf, ms_getenv(env_name, msvar->envp));
 		padding = ft_strlen(env_name);
 		free(env_name);
 	}
@@ -141,7 +145,7 @@ size_t	expand_dollar_sign(t_buf *buf, char *str, char **envp)
 	return (padding);
 }
 
-t_token_stream	*tokenizer(char *str, char **envp)
+t_token_stream	*tokenizer(char *str, t_msvar *msvar)
 {
 	t_token_stream	*stream = create_token_stream();
 	t_quote_mode	mode = WITHOUT_QUOTE;
@@ -156,7 +160,7 @@ t_token_stream	*tokenizer(char *str, char **envp)
 			else if (*str == '"')
 				mode = DOUBLE_QUOTE;
 			else if (*str == '$')
-				str += expand_dollar_sign(buf, str, envp);
+				str += expand_dollar_sign(buf, str, msvar);
 			else if (*str == ' ')
 			{
 				if (buf->length)
@@ -221,7 +225,7 @@ t_token_stream	*tokenizer(char *str, char **envp)
 			if (*str == '"')
 				mode = WITHOUT_QUOTE;
 			else if (*str == '$')
-				str += expand_dollar_sign(buf, str, envp);
+				str += expand_dollar_sign(buf, str, msvar);
 			else
 				append_buf(buf, *str);
 			++str;
