@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_seg_exec.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 19:47:47 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/10 21:00:26 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/17 15:20:11 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,7 @@ void	pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
 	cpid_cnt = ft_lstsize(ps->ceu_list);
 	cpids = malloc(sizeof(pid_t) * cpid_cnt);
 	if (!cpids)
-	{
-		// Exception
-	}
+		exit(1);
 	size_t	i = 0;
 	for (t_list *it = ps->ceu_list; it; ++i)
 	{

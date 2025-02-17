@@ -89,7 +89,7 @@ test_ceu_exec:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
 	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
 
-test_pipe_seg_exec:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
+test_pipe_seg_exec:	$(OBJ) $(LIBFT) | $(OBJ_DIR)	
 	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
 	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
 

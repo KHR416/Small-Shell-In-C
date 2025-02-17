@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ceu.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/12 21:31:41 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/17 13:54:45 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define CEU_H
 # include "token.h"
 # include "minishell.h"
-# include <libft.h>
+# include "libft.h"
 
 typedef enum e_input_redirection_type
 {
