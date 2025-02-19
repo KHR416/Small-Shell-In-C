@@ -27,11 +27,25 @@ int	main(int argc, char **argv, char **envp)
 		add_history(str);
 		ts = tokenizer(str, &msvar);
 		free(str);
+
+		if (ts == NULL)
+		{
+			continue;
+		}
+
 		if (ts->len && (ps = create_pipe_seg(ts->arr, ts->arr + ts->len)))
 		{
 			cpid = fork();
-			if (!cpid)
+			if (cpid == -1)
+			{
+				perror("fork");
+				exit(EXIT_FAILURE);
+			}
+			else if (cpid == 0)
+			{
 				pipe_seg_exec(ps, &msvar);
+				exit(EXIT_SUCCESS);
+			}
 			else
 			{
 				waitpid(cpid, &wstatus, 0);

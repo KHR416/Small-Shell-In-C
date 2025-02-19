@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 19:34:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/17 19:39:58 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/19 17:01:05 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_glob_result	*ms_glob(char *pattern)
 {
-
+	// need to implement
 }
 
 void	ms_glob_free(t_glob_result *result)

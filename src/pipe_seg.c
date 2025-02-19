@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/17 17:53:58 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/19 16:34:00 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,11 +101,17 @@ t_pipe_seg	*create_pipe_seg(t_token *iter_begin, t_token *iter_end)
 	while (iter_begin < iter_end)
 	{
 		temp = create_ceu(iter_begin, iter_begin + ceu_token_len(iter_begin, iter_end));
-		if (!temp || ft_lstpush_back(&ps->ceu_list, temp))
-		{
-			destroy_pipe_seg(ps);
-			return (NULL);
-		}
+	if (!temp)
+	{
+	    destroy_pipe_seg(ps);
+	    return (NULL);
+	}
+	if (ft_lstpush_back(&ps->ceu_list, temp))
+	{
+	    destroy_ceu(temp);
+	    destroy_pipe_seg(ps);
+	    return (NULL);
+	}
 		iter_begin += ceu_token_len(iter_begin, iter_end);
 		if (iter_begin < iter_end && !is_ceu_token((++iter_begin)->type))
 		{

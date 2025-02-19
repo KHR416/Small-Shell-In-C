@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/17 15:28:24 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/19 16:40:33 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define PIPE_SEG_H
 # include "ceu.h"
 # include <sys/types.h>
+# include <stdio.h>
 
 typedef struct s_pipeline_segment
 {
