@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 21:23:33 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/08 16:57:59 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/21 15:39:11 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,6 @@
 
 int	ms_exit(char **args)
 {
-	exit(0);
-	return (0);
+	exit(SUCCESS);
+	return (SUCCESS);
 }

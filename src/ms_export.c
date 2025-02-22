@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/14 18:36:42 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/21 15:42:59 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,31 +89,26 @@ static void	print_all_env(char **args, t_msvar *var)
 
 int	ms_export(char **args, t_msvar *var)
 {
-	char	*checker;
 	int		i;
+	int		j;
 
-	checker = "export";
+	while (ft_strcmp("export", args[i]) == 0)
+		++i;
+	if (ft_strncmp("export", args[i], 7) == 0 && \
+	ft_strncmp("export", args[i - 1], 7) == 0 && i > 0)
+		ms_setenv("export", "", var->envp);
 	if (args[1] == NULL)
 	{
 		print_all_env(args, var);
 		return (SUCCESS);
 	}
-	else if (ft_strcmp(args[0], args[1]) == 0 && args[2] == NULL)
-	{
-		ms_setenv();
-	}
 	else
 	{
-		i = 0;
-		while (ft_strcmp(checker, args[i]) == 0)
-			++i;
 		if (is_equal_exist(args[i]))
-		{
-
-		}
+			ms_setenv(get_first_line(args[i]), get_second_line(args[i]), var->envp);
 		else
-		{
-			
-		}
+			ms_setenv(args[i], "", var->envp);
+		return (SUCCESS);
 	}
+	return (FAILURE);
 }

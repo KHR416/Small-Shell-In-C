@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 20:08:43 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/08 22:06:14 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/21 15:41:59 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ int	ms_echo_n_option(char **args)
 {
 	int	i;
 
-	if (args[2] == NULL)
+	if (args[1] == NULL)
 		return (SUCCESS);
 	i = 1;
-	while (ft_strcmp("-n", args[i]) == 0)
+	while (ft_strncmp("-n", args[i], 3) == 0)
 		++i;
 	while (args[i + 1] != NULL)
 	{
