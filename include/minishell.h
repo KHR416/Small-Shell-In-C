@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 23:00:14 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/17 19:49:15 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/24 16:35:55 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ typedef struct s_msvar
 	int		argc;
 	char	**argv;
 	char	**envp;
-	int		wstatus;
+	int		exit_status;
 }	t_msvar;
 
 char	*ms_getcwd(void);

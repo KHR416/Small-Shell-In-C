@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_seg_exec.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 19:47:47 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/19 16:52:52 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/24 19:01:14 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 
-void    pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
+int	pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
 {
 	size_t	pipe_cnt;
 	size_t	cpid_cnt;
-	int		wstatus;
+	int		wstatus = 255;
 	pid_t	*cpids;
 	int		pipefd[2];
 
@@ -29,7 +29,7 @@ void    pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
 	if (!cpids)
 	{
 		perror("malloc");
-		exit(EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
 	size_t  i = 0;
 	for (t_list *it = ps->ceu_list; it; ++i)
@@ -39,14 +39,16 @@ void    pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
 			if (pipe(pipefd) == -1)
 			{
 				perror("pipe");
-				exit(EXIT_FAILURE);
+				free(cpids);
+				return (EXIT_FAILURE);
 			}
 		}
 		cpids[i] = fork();
 		if (cpids[i] == -1)
 		{
 			perror("fork");
-			exit(EXIT_FAILURE);
+			free(cpids);
+			return (EXIT_FAILURE);
 		}
 		if (!cpids[i])
 		{
@@ -56,9 +58,9 @@ void    pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
 				dup2(pipefd[1], STDOUT_FILENO);
 				close(pipefd[1]);
 			}
-			t_ceu   *ceu = it->content;
-			ceu_exec(ceu, msvar);
-			exit(EXIT_SUCCESS);
+			int	exit_status = ceu_exec(it->content, msvar);
+			free(cpids);
+			return (exit_status);
 		}
 		if (i < pipe_cnt)
 		{
@@ -71,4 +73,5 @@ void    pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
 	for (i = 0; i < cpid_cnt; ++i)
 		waitpid(cpids[i], &wstatus, 0);
 	free(cpids);
+	return (WEXITSTATUS(wstatus));
 }

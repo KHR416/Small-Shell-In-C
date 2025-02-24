@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ceu_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 16:32:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/17 15:55:24 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/24 15:50:14 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,12 +132,15 @@ void	destory_split(char **split)
 	free(split);
 }
 
-void	try_execve_with_path(char **argv, char **envp)
+void	try_execve(char **argv, char **envp)
 {
 	char	**paths;
 	t_buf	*buf;
 	size_t	i;
 
+	execve(argv[0], argv, envp);
+	if (errno && errno != ENOENT)
+		return ;
 	paths = ft_split(retrieve_path(envp), ':');
 	if (!paths)
 	{
@@ -156,7 +159,7 @@ void	try_execve_with_path(char **argv, char **envp)
 		append_buf(buf, '/');
 		cat_buf(buf, argv[0]);
 		execve(buf->buffer, argv, envp);
-		if (errno == EACCES)
+		if (errno && errno != ENOENT)
 			break ;
 		++i;
 	}
@@ -164,30 +167,25 @@ void	try_execve_with_path(char **argv, char **envp)
 	destroy_buf(buf);
 }
 
-void	ceu_exec(t_ceu *ceu, t_msvar *msvar)
+int	ceu_exec(t_ceu *ceu, t_msvar *msvar)
 {
 	if (process_in_redir(ceu->ir_list))
-	{
-		destroy_ceu(ceu);
-		free_msvar(msvar);
-		exit(EXIT_FAILURE);
-	}
+		return (EXIT_FAILURE);
 	if (proces_out_redir(ceu->or_list))
-	{
-		destroy_ceu(ceu);
-		free_msvar(msvar);
-		exit(EXIT_FAILURE);
-	}
+		return (EXIT_FAILURE);
 	if (!ceu->argv[0])
-		exit(EXIT_SUCCESS);
-	try_execve_with_path(ceu->argv, msvar->envp);
+		return (EXIT_SUCCESS);
+	/*
+		We need codes for built-in here
+	if (is_buildin(ceu->argv[0]))
+		return ();
+	*/
+	try_execve(ceu->argv, msvar->envp);
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	perror(ceu->argv[0]);
-	destroy_ceu(ceu);
-	free_msvar(msvar);
 	if (errno == EACCES)
-		exit(126);
+		return (126);
 	if (errno == ENOENT)
-		exit(127);
-	exit(EXIT_FAILURE);
+		return (127);
+	return (EXIT_FAILURE);
 }

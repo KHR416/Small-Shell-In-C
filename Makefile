@@ -15,6 +15,9 @@ CFLAGS = -Wall -Wextra -Werror -I$(INC_DIR)
 ifdef DEBUG
 	CFLAGS += -g -D DEBUG
 endif
+ifdef MEMCHECK
+	CFLAGS += -D MEMCHECK
+endif
 LDFLAGS := -Llib -lft -lreadline
 
 # TODO: Write all source files
@@ -33,6 +36,8 @@ SRC := \
 	ms_var_init.c\
 	pipe_seg_exec.c
 OBJ := $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
+MAIN_SRC := main.c
+MAIN_OBJ := $(OBJ_DIR)/main.o
 
 vpath %.c $(SRC_DIR)
 
@@ -40,8 +45,8 @@ vpath %.c $(SRC_DIR)
 
 all: $(MINISHELL)
 
-$(MINISHELL): $(OBJ) $(LIBFT)
-	$(CC) $(OBJ) $(LDFLAGS) -o $@
+$(MINISHELL): $(OBJ) $(MAIN_OBJ) $(LIBFT)
+	$(CC) $(OBJ) $(MAIN_OBJ) $(LDFLAGS) -o $@
 
 $(OBJ_DIR)/%.o: %.c $(LIBFT_HDR) | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -90,6 +95,10 @@ test_ceu_exec:	$(OBJ) $(LIBFT) | $(OBJ_DIR)
 	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
 
 test_pipe_seg_exec:	$(OBJ) $(LIBFT) | $(OBJ_DIR)	
+	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
+	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
+
+test_ast:	$(OBJ) $(LIBFT) | $(OBJ_DIR)	
 	$(CC) $(CFLAGS) -c $(TEST_SRC_DIR)/$@_main.c -o $(OBJ_DIR)/$@_main.o
 	$(CC) $(OBJ) $(OBJ_DIR)/$@_main.o $(LDFLAGS)
 

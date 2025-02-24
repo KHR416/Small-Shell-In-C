@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:06:42 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/12 21:31:29 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/24 16:35:55 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,11 +123,11 @@ size_t	expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar)
 	++str;
 	if (*str == '?')
 	{
-		if (msvar->wstatus >= 100)
-			append_buf(buf, msvar->wstatus / 100 + '0');
-		if (msvar->wstatus >= 10)
-			append_buf(buf, msvar->wstatus / 10 % 10 + '0');
-		append_buf(buf, msvar->wstatus % 10 + '0');
+		if (msvar->exit_status >= 100)
+			append_buf(buf, msvar->exit_status / 100 + '0');
+		if (msvar->exit_status >= 10)
+			append_buf(buf, msvar->exit_status / 10 % 10 + '0');
+		append_buf(buf, msvar->exit_status % 10 + '0');
 		padding = 1;
 	}
 	else if (ft_isalpha(*str) || *str == '_')

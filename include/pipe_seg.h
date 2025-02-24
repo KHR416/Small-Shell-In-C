@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_seg.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/19 16:40:33 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/24 16:03:06 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,4 +26,5 @@ size_t		pipe_seg_len(t_token *iter_begin, t_token *iter_end);
 void		destroy_pipe_seg(t_pipe_seg *ps);
 t_pipe_seg	*create_pipe_seg(t_token *iter_begin, t_token *iter_end);
 int			print_pipe_seg(t_pipe_seg *ps);
+int			pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar);
 #endif	// PIPE_SEG_H

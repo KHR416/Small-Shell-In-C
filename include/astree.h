@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 16:05:11 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/10 16:01:31 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/24 17:21:03 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,12 @@ struct s_ast_node
 	t_node_type		type;
 	t_ast_node_data	*data;
 };
+
+t_ast	*create_ast_node(void);
+void	destroy_ast_node(t_ast *node);
+void	destroy_ast(t_ast *root);
+t_ast	*analyzer(t_token_stream *ts);
+int		ast_traversal(t_ast *root, t_ast *node, t_msvar *msvar);
 
 t_node_type	ast_node_type(t_ast *node);
 void 		ast_attach_binary_branch (t_ast *root , t_ast *left_node , t_ast *right_node);

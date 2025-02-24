@@ -60,7 +60,7 @@ void		destroy_out_redir(void *or_list);
 void		destroy_argv(char **argv);
 void		destroy_ceu(void *ceu);
 t_ceu		*create_ceu(t_token *iter_begin, t_token *iter_end);
-void		ceu_exec(t_ceu *ceu, t_msvar *msvar);
+int			ceu_exec(t_ceu *ceu, t_msvar *msvar);
 
 # ifdef DEBUG
 
