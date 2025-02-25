@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/21 15:38:58 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/25 12:18:52 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,14 @@ int	ms_env(char **args, t_msvar *var)
 	int		i;
 
 	i = 0;
+	env = var->envp;
+	while (*env != NULL)
+	{
+		if (is_equal_exist(*env))
+			printf("%s\n", *env);
+		++env;
+	}
+	return (SUCCESS);
 	env = var->envp;
 	while (*env != NULL)
 	{
