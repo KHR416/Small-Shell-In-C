@@ -8,60 +8,37 @@
 #include "astree.h"
 #include "minishell.h"
 
-int	ceu_exec(t_ceu *ceu, t_msvar *msvar);
-
 int	main(int argc, char **argv, char **envp)
 {
-	#ifndef MEMCHECK
 	char			*str = NULL;
-	#else
-	char			buf[BUFFER_SIZE];
-	#endif	// MEMCHECK
 	t_token_stream	*ts = NULL;
-	t_ceu			*ceu = NULL;
 	t_msvar			msvar;
-	pid_t			cpid;
-	int				wstatus;
 
 	ms_var_init(argc, argv, envp, &msvar);
 	while (1)
 	{
-		#ifndef MEMCHECK
-		if (!(str = readline("$ ")))
+		str = rl_gets();
+		if (!str)
 			break ;
-		add_history(str);
+		if (!*str)
+		{
+			free(str);
+			continue ;
+		}
 		ts = tokenizer(str, &msvar);
 		free(str);
-		#else
-		printf("$ ");
-		if (!fgets(buf, BUFFER_SIZE, stdin))
-			break ;
-		buf[strlen(buf) - 1] = '\0';
-		ts = tokenizer(buf, &msvar);
-		#endif	//MEMCHECK
-		if (ts->len && (ceu = create_ceu(ts->arr, ts->arr + ts->len)))
-		{
-			destroy_token_stream(ts);
-			cpid = fork();
-			if (cpid < 0)
-				perror("fork");
-			else if (!cpid)
-			{
-				int	exit_status = ceu_exec(ceu, &msvar);
-				destroy_ceu(ceu);
-				free_msvar(&msvar);
-				exit(exit_status);
-			}
-			else
-			{
-				waitpid(cpid, &wstatus, 0);
-				fprintf(stderr, "The child process is terminated with exit code: %d\n", WEXITSTATUS(wstatus));
-			}
-			destroy_ceu(ceu);
-		}
-		else
-			destroy_token_stream(ts);
+		if (!ts)
+			continue ;
+		msvar.ceu = create_ceu(ts->arr, ts->arr + ts->len);
+		destroy_token_stream(ts);
+		if (!msvar.ceu)
+			continue ;
+		msvar.exit_status = ceu_exec(msvar.ceu, &msvar, 0);
+		fprintf(stderr, "Command exited with %d\n", msvar.exit_status);
+		destroy_ceu(msvar.ceu);
+		msvar.ceu = NULL;
+		restore_ttydup(&msvar);
 	}
-	free_msvar(&msvar);
+	clear_msvar(&msvar);
 	return (EXIT_SUCCESS);
 }

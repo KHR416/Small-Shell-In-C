@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/24 21:33:23 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/27 07:26:16 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ void	destroy_ast_node(t_ast *node)
 	if (!node)
 		return ;
 	// Only pipe_seg exist for mandatory
-	if (node->type == NODE_PIPE_SEG)
+	if (node->type == NODE_CEU)
+		destroy_ceu(node->data->ceu);
+	else if (node->type == NODE_PIPE_SEG)
 		destroy_pipe_seg(node->data->pipe_seg);
 	else
 	{
@@ -72,16 +74,21 @@ t_ast	*analyzer(t_token_stream *ts)
 	root = create_ast_node();
 	if (!root)
 		return (NULL);
-	// Only pipe_seg exist for mandatory
-	root->type = NODE_PIPE_SEG;
+	if (pipe_seg_len(ts->arr, ts->arr + ts->len) == 0)
+		root->type = NODE_CEU;
+	else
+		root->type = NODE_PIPE_SEG;
 	root->data = malloc(sizeof(t_ast_node_data));
 	if (!root->data)
 	{
 		free(root);
 		return (NULL);
 	}
-	root->data->pipe_seg = create_pipe_seg(ts->arr, ts->arr + ts->len);
-	if (!root->data->pipe_seg)
+	if (root->type == NODE_CEU)
+		root->data->ceu = create_ceu(ts->arr, ts->arr + ts->len);
+	else
+		root->data->pipe_seg = create_pipe_seg(ts->arr, ts->arr + ts->len);
+	if ((root->type == NODE_CEU && !root->data->ceu) || (root->type != NODE_CEU && !root->data->pipe_seg))
 	{
 		free(root->data);
 		free(root);
@@ -90,32 +97,16 @@ t_ast	*analyzer(t_token_stream *ts)
 	return (root);
 }
 
-#include <sys/wait.h>
-
-int	ast_traversal(t_ast *root, t_ast *node, t_msvar *msvar)
+int	ast_traversal(t_ast *node, t_msvar *msvar)
 {
-	int	wstatus;
-	if (node->type == NODE_PIPE_SEG)
+	if (node->type == NODE_CEU)
 	{
-		pid_t	cpid = fork();
-		if (cpid < 0)
-		{
-			// Exception
-		}
-		else if (!cpid)
-		{
-			int exit_status = pipe_seg_exec(node->data->pipe_seg, msvar);
-			destroy_ast(root);
-			free_msvar(msvar);
-			exit(exit_status);
-		}
-		else
-		{
-			waitpid(cpid, &wstatus, 0);
-			msvar->exit_status = WEXITSTATUS(wstatus);
-			return (WEXITSTATUS(wstatus));
-		}
+		int exit_status = ceu_exec(node->data->ceu, msvar, 0);
+		restore_ttydup(msvar);
+		return (exit_status);
 	}
+	else if (node->type == NODE_PIPE_SEG)
+		return(pipe_seg_exec(node->data->pipe_seg, msvar));
 	else // if (node->type == NODE_LOGI)
 	{
 		// For bouns

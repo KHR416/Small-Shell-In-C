@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/25 18:31:41 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/27 05:37:58 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int	ms_export(char **args, t_msvar *var)
 				free(second_line);
 				continue ;
 			}
-			ms_setenv(first_line, second_line, var->envp);
+			ms_setenv(first_line, second_line, &var->envp);
 			free(first_line);
 			free(second_line);
 		}

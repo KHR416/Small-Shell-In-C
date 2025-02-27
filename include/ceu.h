@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ceu.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/17 13:54:45 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/27 07:12:26 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void		destroy_out_redir(void *or_list);
 void		destroy_argv(char **argv);
 void		destroy_ceu(void *ceu);
 t_ceu		*create_ceu(t_token *iter_begin, t_token *iter_end);
-int			ceu_exec(t_ceu *ceu, t_msvar *msvar);
+int			ceu_exec(t_ceu *ceu, t_msvar *msvar, int flag_pipe_seg);
 
 # ifdef DEBUG
 

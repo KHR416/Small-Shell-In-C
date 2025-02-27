@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 21:23:36 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/25 16:51:24 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/27 05:39:08 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,6 @@ int	ms_unset(char **args, t_msvar *var)
 	int	i;
 
 	i = 1;
-	if (args[1] == 1)
-		return (SUCCESS);
 	while (args[i] != NULL)
 	{
 		if (find_env(args[i], var->envp) == SUCCESS)

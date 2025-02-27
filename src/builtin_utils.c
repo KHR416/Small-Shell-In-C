@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:58:20 by chakim            #+#    #+#             */
-/*   Updated: 2025/01/08 15:21:06 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/27 08:53:47 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,70 @@
 	if it is valid, it's parsed to exe_func and return 0. Unless, return error code.
 	There are 7 builtins implemented. only echo needs to do that with -n option.
 */
-int	is_valid_builtins(t_command *command, t_msvar *var)
+// int	is_valid_builtins(char **argv, t_msvar *var)
+// {
+// 	if (ft_strcmp("echo", argv[0]) == 0)
+// 	{
+// 		if (ft_strcmp("-n", argv[1]) == 0)
+// 			return (ms_echo_n_option(argv));
+// 		else
+// 			return (ms_echo(argv));
+// 	}
+// 	else if (ft_strcmp("cd", argv[0]) == 0)
+// 		return (ms_cd(argv));
+// 	else if (ft_strcmp("export", argv[0]) == 0)
+// 		return (ms_export(argv, var));
+// 	else if (ft_strcmp("unset", argv[0]) == 0)
+// 		return (ms_unset(argv));
+// 	else if (ft_strcmp("env", argv[0]) == 0)
+// 		return (ms_env(argv, var));
+// 	else if (ft_strcmp("exit", argv[0]) == 0)
+// 		return (ms_exit(argv));
+// 	else if (ft_strcmp("pwd", argv[0]) == 0)
+// 		return (ms_pwd());
+// 	else
+// 		return (FAILURE);
+// }
+
+int	is_builtin(char *cmd)
 {
-	if (ft_strcmp("echo", command->args[0]) == 0)
+	if (ft_strcmp("echo", cmd) == 0)
+		return (1);
+	if (ft_strcmp("cd", cmd) == 0)
+		return (1);
+	if (ft_strcmp("export", cmd) == 0)
+		return (1);
+	if (ft_strcmp("unset", cmd) == 0)
+		return (1);
+	if (ft_strcmp("env", cmd) == 0)
+		return (1);
+	if (ft_strcmp("exit", cmd) == 0)
+		return (1);
+	if (ft_strcmp("pwd", cmd) == 0)
+		return (1);
+	return (0);
+}
+
+int	exec_builtin(char **argv, t_msvar *var)
+{
+	if (ft_strcmp("echo", argv[0]) == 0)
 	{
-		if (ft_strcmp("-n", command->args[1]) == 0)
-			return (ms_echo_n_option(command->args));
+		if (!argv[1])
+			return (ms_echo(argv));
+		if (ft_strcmp("-n", argv[1]) == 0)
+			return (ms_echo_n_option(argv));
 		else
-			return (ms_echo(command->args));
+			return (ms_echo(argv));
 	}
-	else if (ft_strcmp("cd", command->args[0]) == 0)
-		return (ms_cd(command->args));
-	else if (ft_strcmp("export", command->args[0]) == 0)
-		return (ms_export(command->args, var));
-	else if (ft_strcmp("unset", command->args[0]) == 0)
-		return (ms_unset(command->args));
-	else if (ft_strcmp("env", command->args[0]) == 0)
-		return (ms_env(command->args, var));
-	else if (ft_strcmp("exit", command->args[0]) == 0)
-		return (ms_exit(command->args));
-	else if (ft_strcmp("pwd", command->args[0]) == 0)
-		return (ms_pwd());
-	else
-		return (FAILURE);
+	if (ft_strcmp("cd", argv[0]) == 0)
+		return (ms_cd(argv));
+	if (ft_strcmp("export", argv[0]) == 0)
+		return (ms_export(argv, var));
+	if (ft_strcmp("unset", argv[0]) == 0)
+		return (ms_unset(argv, var));
+	if (ft_strcmp("env", argv[0]) == 0)
+		return (ms_env(argv, var));
+	if (ft_strcmp("exit", argv[0]) == 0)
+		return (ms_exit(argv, var));
+	return (ms_pwd());
 }

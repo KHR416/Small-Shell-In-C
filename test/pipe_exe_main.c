@@ -15,9 +15,8 @@ int	main(int argc, char **argv, char **envp)
 	ms_var_init(argc, argv, envp, &msvar);
 	while (1)
 	{
-		if (!(str = readline("$ ")))
+		if (!(str = rl_gets()))
 			break ;
-		add_history(str);
 		ts = tokenizer(str, &msvar);
 		free(str);
 		if (ts->len)
@@ -28,6 +27,6 @@ int	main(int argc, char **argv, char **envp)
 		}
 		destroy_token_stream(ts);
 	}
-	free_msvar(&msvar);
+	clear_msvar(&msvar);
 	return (EXIT_SUCCESS);
 }

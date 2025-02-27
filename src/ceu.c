@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ceu.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/19 16:33:51 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/25 16:35:42 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,30 +40,6 @@ void	print_error_unexpected_token(t_token_type t)
 	ft_putendl_fd("`", STDERR_FILENO);
 }
 
-int	print_in_redir(t_in_redir *ir)
-{
-	#ifdef DEBUG
-	if (!ir)
-		return (FAILURE);
-	if (ir->type == IR_DEFAULT)
-		fprintf(stderr, "%s", "<");
-	else
-		fprintf(stderr, "%s", "<<");
-	fprintf(stderr, "%s\n", ir->name);
-	return (SUCCESS);
-	#endif
-}
-
-int	print_ir_list(t_list *ir)
-{
-	while (ir)
-	{
-		print_in_redir(ir->content);
-		ir = ir->next;
-	}
-	return (SUCCESS);
-}
-
 t_in_redir	*create_in_redir(t_in_redir_type type, char *data)
 {
 	t_in_redir	*ir;
@@ -82,30 +58,6 @@ void	destroy_in_redir(void *ir)
 {
 	free(((t_in_redir *)ir)->name);
 	free(ir);
-}
-
-int	print_out_redir(t_out_redir *or)
-{
-	#ifdef DEBUG
-	if (!or)
-		return (FAILURE);
-	if (or->type == OR_DEFAULT)
-		fprintf(stderr, "%s", ">");
-	else
-		fprintf(stderr, "%s", ">>");
-	fprintf(stderr, "%s\n", or->name);
-	return (SUCCESS);
-	#endif
-}
-
-int	print_or_list(t_list *or)
-{
-	while (or)
-	{
-		print_out_redir(or->content);
-		or = or->next;
-	}
-	return (SUCCESS);
 }
 
 t_out_redir	*create_out_redir(t_out_redir_type type, char *data)
@@ -141,17 +93,6 @@ void	destroy_argv(char **argv)
 		++it;
 	}
 	free(argv);
-}
-
-int	print_argv(char **argv)
-{
-	#ifdef DEBUG
-	if (!argv)
-		return (FAILURE);
-	for (char **it = argv; *it; ++it)
-		fprintf(stderr, "argv[%zu]: %s\n", it - argv, *it);
-	return (SUCCESS);
-	#endif
 }
 
 void	**list_to_arr(t_list *lst, void *(*dup)())
@@ -285,21 +226,6 @@ t_ceu	*create_ceu(t_token *iter_begin, t_token *iter_end)
 	}
 	ft_lstclear(&argv_list, free);
 	return (ceu);
-}
-
-int	print_ceu(t_ceu *ceu)
-{
-	#ifdef DEBUG
-	if (!ceu)
-		return (FAILURE);
-	if (print_ir_list(ceu->ir_list))
-		return (FAILURE);
-	if (print_or_list(ceu->or_list))
-		return (FAILURE);
-	if (print_argv(ceu->argv))
-		return (FAILURE);
-	return (SUCCESS);
-	#endif
 }
 
 void	destroy_ceu(void *ceu)

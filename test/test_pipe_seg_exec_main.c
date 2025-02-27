@@ -10,58 +10,34 @@
 
 int	main(int argc, char **argv, char **envp)
 {
-	#ifndef MEMCHECK
 	char			*str = NULL;
-	#else
-	char			buf[BUFFER_SIZE];
-	#endif	// MEMCHECK
 	t_token_stream	*ts = NULL;
-	t_pipe_seg		*ps = NULL;
 	t_msvar			msvar;
-	pid_t			cpid;
-	int				wstatus = 255;
 
 	ms_var_init(argc, argv, envp, &msvar);
 	while (1)
 	{
-		#ifndef MEMCHECK
-		if (!(str = readline("$ ")))
+		str = rl_gets();
+		if (!str)
 			break ;
-		add_history(str);
+		if (!*str)
+		{
+			free(str);
+			continue ;
+		}
 		ts = tokenizer(str, &msvar);
 		free(str);
-		#else
-		printf("$ ");
-		if (!fgets(buf, BUFFER_SIZE, stdin))
-			break ;
-		buf[strlen(buf) - 1] = '\0';
-		ts = tokenizer(buf, &msvar);
-		#endif	//MEMCHECK
-		if (ts == NULL)
+		if (!ts)
 			continue ;
-		if (ts->len && (ps = create_pipe_seg(ts->arr, ts->arr + ts->len)))
-		{
-			destroy_token_stream(ts);
-			cpid = fork();
-			if (cpid == -1)
-				perror("fork");
-			else if (cpid == 0)
-			{
-				int exit_status = pipe_seg_exec(ps, &msvar);
-				destroy_pipe_seg(ps);
-				free_msvar(&msvar);
-				exit(exit_status);
-			}
-			else
-			{
-				waitpid(cpid, &wstatus, 0);
-				fprintf(stderr, "The child process is terminated with exit code: %d\n", WEXITSTATUS(wstatus));
-			}
-			destroy_pipe_seg(ps);
-		}
-		else
-			destroy_token_stream(ts);
+		msvar.ps = create_pipe_seg(ts->arr, ts->arr + ts->len);
+		destroy_token_stream(ts);
+		if (!msvar.ps)
+			continue ;
+		msvar.exit_status = pipe_seg_exec(msvar.ps, &msvar);
+		destroy_pipe_seg(msvar.ps);
+		msvar.ps = NULL;
+		fprintf(stderr, "PS exited with %d\n", msvar.exit_status);
 	}
-	free_msvar(&msvar);
+	clear_msvar(&msvar);
 	return (EXIT_SUCCESS);
 }

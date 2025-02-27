@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/25 12:18:52 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/27 05:14:26 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,13 @@ int	ms_env(char **args, t_msvar *var)
 	int		i;
 
 	i = 0;
+	while (args[i])
+		++i;
+	if (i > 1)
+	{
+		ft_putendl_fd("minishell: env: too many arguments.", STDERR_FILENO);
+		return (EXIT_FAILURE);
+	}
 	env = var->envp;
 	while (*env != NULL)
 	{
@@ -39,13 +46,5 @@ int	ms_env(char **args, t_msvar *var)
 			printf("%s\n", *env);
 		++env;
 	}
-	return (SUCCESS);
-	env = var->envp;
-	while (*env != NULL)
-	{
-		if (is_equal_exist(*env))
-			printf("%s\n", *env);
-		++env;
-	}
-	return (SUCCESS);
+	return (EXIT_SUCCESS);
 }

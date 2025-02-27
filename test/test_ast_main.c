@@ -10,42 +10,34 @@
 
 int	main(int argc, char **argv, char **envp)
 {
-	#ifndef MEMCHECK
 	char			*str = NULL;
-	#else
-	char			buf[BUFFER_SIZE];
-	#endif	// MEMCHECK
 	t_token_stream	*ts = NULL;
-	t_ast			*ast = NULL;
 	t_msvar			msvar;
 
 	ms_var_init(argc, argv, envp, &msvar);
 	while (1)
 	{
-		#ifndef MEMCHECK
-		if (!(str = readline("$ ")))
+		str = rl_gets();
+		if (!str)
 			break ;
-		add_history(str);
+		if (!*str)
+		{
+			free(str);
+			continue ;
+		}
 		ts = tokenizer(str, &msvar);
 		free(str);
-		#else
-		printf("$ ");
-		if (!fgets(buf, BUFFER_SIZE, stdin))
-			break ;
-		buf[strlen(buf) - 1] = '\0';
-		ts = tokenizer(buf, &msvar);
-		#endif	//MEMCHECK
-		if (ts == NULL)
+		if (!ts)
 			continue ;
-		if (ts->len && (ast = analyzer(ts)))
-		{
-			destroy_token_stream(ts);
-			ast_traversal(ast, ast, &msvar);
-			destroy_ast(ast);
-		}
-		else
-			destroy_token_stream(ts);
+		msvar.ast = analyzer(ts);
+		destroy_token_stream(ts);
+		if (!msvar.ast)
+			continue ;
+		msvar.exit_status = ast_traversal(msvar.ast, &msvar);
+		fprintf(stderr, "AST exited with %d\n", msvar.exit_status);
+		destroy_ast(msvar.ast);
+		msvar.ast = NULL;
 	}
-	free_msvar(&msvar);
+	clear_msvar(&msvar);
 	return (EXIT_SUCCESS);
 }

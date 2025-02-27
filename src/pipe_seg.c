@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_seg.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/19 16:34:00 by chakim           ###   ########.fr       */
+/*   Updated: 2025/02/25 16:38:16 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,6 @@ void	destroy_pipe_seg(t_pipe_seg *ps)
 	free(ps);
 }
 
-// int	is_valid_pipe_seg_ta(t_token *ta, size_t begin, size_t end)
-// {
-	
-// }
-
-// It returns the pipe closest to `iter_begin`.
-// If the pipe doesn't exist, it returns `iter_end`.
 t_token	*find_pipe(t_token *iter_begin, t_token *iter_end)
 {
 	while (iter_begin < iter_end)
@@ -123,20 +116,4 @@ t_pipe_seg	*create_pipe_seg(t_token *iter_begin, t_token *iter_end)
 		}
 	}
 	return (ps);
-}
-
-int	print_pipe_seg(t_pipe_seg *ps)
-{
-	#ifdef DEBUG
-	if (!ps || !ps->ceu_list)
-		return (FAILURE);
-	for (t_list *it = ps->ceu_list; it; it = it->next)
-	{
-		if (it != ps->ceu_list)
-			fprintf(stderr, "====PIPE====\n");
-		if (print_ceu(it->content))
-			return (FAILURE);
-	}
-	return (SUCCESS);
-	#endif
 }

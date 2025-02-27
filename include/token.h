@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:08:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/10 19:34:35 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/27 08:49:46 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,18 @@ typedef enum e_quote_mode
 	DOUBLE_QUOTE = (1 << 1),
 }	t_quote_mode;
 
-int	set_mod(t_quote_mode *mode, char c);
 t_token_stream	*create_token_stream(void);
-void	destroy_token_stream(t_token_stream *stream);
-int	realloc_token_stream(t_token_stream *stream, size_t new_cap);
-int	append_token_stream(t_token_stream *stream, t_token_type type, char *data);
-char	*get_path_name(char *str);
-size_t	expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar);
+void			destroy_token_stream(t_token_stream *stream);
+int				realloc_token_stream(t_token_stream *stream, size_t new_cap);
+int				append_token_stream(t_token_stream *stream, t_token_type type, char *data);
+char			*get_path_name_with_equal_sign(char *str);
+size_t			expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar);
 t_token_stream	*tokenizer(char *str, t_msvar *msvar);
+void			print_error_unexpected_token(t_token_type t);
+
+# ifdef DEBUG
+
 void	print_token(t_token *t);
 void	print_token_stream(t_token_stream *ts);
-void	print_error_unexpected_token(t_token_type t);
-#endif
+# endif	// DEBUG
+#endif	// TOKEN_h

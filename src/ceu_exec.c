@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 16:32:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/24 15:50:14 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/27 08:18:12 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,11 @@
 #include <libft.h>
 #include <errno.h>
 #define TMP_FILE ".minishell_tmp_file"
-
-void	print_warning_heredoc_eof(char *delimiter)
-{
-	ft_putstr_fd("minishell: warning: here-document delimited by end-of-file (wanted `", STDERR_FILENO);
-	ft_putstr_fd(delimiter, STDERR_FILENO);
-	ft_putendl_fd("`)", STDERR_FILENO);
-}
+#include "builtin.h"
 
 int	process_in_redir(t_list *ir_list)
 {
 	int		fd;
-	char	*str;
 
 	while (ir_list)
 	{
@@ -50,30 +43,19 @@ int	process_in_redir(t_list *ir_list)
 		}
 		else if (((t_in_redir *)ir_list->content)->type == IR_HERE_DOC)
 		{
-			fd = open(TMP_FILE, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			while (1)
+			fd = open(((t_in_redir *)ir_list->content)->name, O_RDONLY);
+			if (fd < 0)
 			{
-				str = readline("> ");
-				if (!str)
-				{
-					print_warning_heredoc_eof(((t_in_redir *)ir_list->content)->name);
-					break ;
-				}
-				else if (!ft_memcmp(str, ((t_in_redir *)ir_list->content)->name, ft_strlen(((t_in_redir *)ir_list->content)->name)))
-				{
-					free(str);
-					break ;
-				}
-				write(fd, str, ft_strlen(str));
-				free(str);
-				ft_putchar_fd('\n', fd);
+				ft_putstr_fd("minishell: ", STDERR_FILENO);
+				perror(((t_in_redir *)ir_list->content)->name);
+				return (FAILURE);
 			}
-			close(fd);
-			fd = open(TMP_FILE, O_RDONLY);
-			unlink(TMP_FILE);
 			if (!ir_list->next)
 				dup2(fd, STDIN_FILENO);
 			close(fd);
+			unlink(((t_in_redir *)ir_list->content)->name);
+			if (!ir_list->next)
+				dup2(fd, STDIN_FILENO);
 		}
 		else
 		{
@@ -132,15 +114,17 @@ void	destory_split(char **split)
 	free(split);
 }
 
-void	try_execve(char **argv, char **envp)
+void	try_command_execve(char **argv, char **envp)
 {
 	char	**paths;
 	t_buf	*buf;
 	size_t	i;
 
-	execve(argv[0], argv, envp);
-	if (errno && errno != ENOENT)
+	if (*argv[0] == '\0')
+	{
+		errno = ENOENT;
 		return ;
+	}
 	paths = ft_split(retrieve_path(envp), ':');
 	if (!paths)
 	{
@@ -167,7 +151,10 @@ void	try_execve(char **argv, char **envp)
 	destroy_buf(buf);
 }
 
-int	ceu_exec(t_ceu *ceu, t_msvar *msvar)
+#include "ms_signal.h"
+#include <sys/wait.h>
+
+int	ceu_exec(t_ceu *ceu, t_msvar *msvar, int flag_pipe_seg)
 {
 	if (process_in_redir(ceu->ir_list))
 		return (EXIT_FAILURE);
@@ -180,12 +167,71 @@ int	ceu_exec(t_ceu *ceu, t_msvar *msvar)
 	if (is_buildin(ceu->argv[0]))
 		return ();
 	*/
-	try_execve(ceu->argv, msvar->envp);
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	perror(ceu->argv[0]);
-	if (errno == EACCES)
-		return (126);
-	if (errno == ENOENT)
-		return (127);
-	return (EXIT_FAILURE);
+	if (flag_pipe_seg)
+	{
+		clear_ttydup(msvar);
+		if (is_builtin(ceu->argv[0]))
+		{
+			int	exit_status = exec_builtin(ceu->argv, msvar);
+			clear_msvar(msvar);
+			exit(exit_status);
+		}
+		clear_ttydup(msvar);
+		rollback_sigaction();
+		if (ft_strchr(ceu->argv[0], '/'))
+			execve(ceu->argv[0], ceu->argv, msvar->envp);
+		else
+			try_command_execve(ceu->argv, msvar->envp);
+		if (ft_strchr(ceu->argv[0], '/') || errno != ENOENT)
+			perror(ceu->argv[0]);
+		else
+		{
+			if (!*ceu->argv[0])
+				ft_putstr_fd("''", STDERR_FILENO);
+			else
+				ft_putstr_fd(ceu->argv[0], STDERR_FILENO);
+			ft_putendl_fd(": command not found", STDERR_FILENO);
+		}
+		clear_msvar(msvar);
+		if (errno == EACCES)
+			exit(126);
+		if (errno == ENOENT)
+			exit(127);
+		exit(EXIT_FAILURE);
+	}
+	if (is_builtin(ceu->argv[0]))
+		return (exec_builtin(ceu->argv, msvar));
+	pid_t	cpid = fork();
+	if (cpid < 0)
+	{
+		perror("minishell: fork");
+		return (EXIT_FAILURE);
+	}
+	if (!cpid)
+	{
+		clear_ttydup(msvar);
+		rollback_sigaction();
+		if (ft_strchr(ceu->argv[0], '/'))
+			execve(ceu->argv[0], ceu->argv, msvar->envp);
+		else
+			try_command_execve(ceu->argv, msvar->envp);
+		if (ft_strchr(ceu->argv[0], '/') || errno != ENOENT)
+			perror(ceu->argv[0]);
+		else
+		{
+			ft_putstr_fd(ceu->argv[0], STDERR_FILENO);
+			ft_putendl_fd(": command not found", STDERR_FILENO);
+		}
+		clear_msvar(msvar);
+		if (errno == EACCES)
+			exit(126);
+		if (errno == ENOENT)
+			exit(127);
+		exit(EXIT_FAILURE);
+	}
+	int	wstatus;
+	waitpid(cpid, &wstatus, 0);
+	if (WIFSIGNALED(wstatus))
+		return (128 + WTERMSIG(wstatus));
+	return (WEXITSTATUS(wstatus));
 }

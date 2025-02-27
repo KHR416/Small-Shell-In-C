@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*   tokenizer_1.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:06:42 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/24 16:35:55 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/27 08:57:39 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,89 +18,7 @@
 #include <libft.h>
 #include <stdio.h>
 
-int	set_mod(t_quote_mode *mode, char c)
-{
-	if (c == '\'')
-	{
-		if (*mode == DOUBLE_QUOTE)
-			return (FAILURE);
-		else if (*mode == SINGLE_QUOTE)
-			*mode = WITHOUT_QUOTE;
-		else if (*mode == WITHOUT_QUOTE)
-			*mode = SINGLE_QUOTE;
-		return (SUCCESS);
-	}
-	else if (c == '\"')
-	{
-		if (*mode == SINGLE_QUOTE)
-			return (FAILURE);
-		else if (*mode == DOUBLE_QUOTE)
-			*mode = WITHOUT_QUOTE;
-		else if (*mode == WITHOUT_QUOTE)
-			*mode = DOUBLE_QUOTE;
-		return (SUCCESS);
-	}
-	return (FAILURE);
-}
-
-#define TOKEN_STREAM_INITIAL_CAP	4
-
-t_token_stream	*create_token_stream(void)
-{
-	t_token_stream	*stream;
-
-	stream = malloc(sizeof(t_token_stream));
-	if (!stream)
-		return (NULL);
-	stream->arr = malloc(sizeof(t_token) * TOKEN_STREAM_INITIAL_CAP);
-	if (!stream->arr)
-	{
-		free(stream);
-		return (NULL);
-	}
-	stream->arr[0].type = TOKEN_NONE;
-	stream->len = 0;
-	stream->cap = TOKEN_STREAM_INITIAL_CAP;
-	return (stream);
-}
-
-void	destroy_token_stream(t_token_stream *stream)
-{
-	size_t	i;
-
-	i = 0;
-	while (stream->arr[i].type != TOKEN_NONE)
-		free(stream->arr[i++].data);
-	free(stream->arr);
-	free(stream);
-}
-
-int	realloc_token_stream(t_token_stream *stream, size_t new_cap)
-{
-	t_token	*temp;
-
-	temp = ft_realloc(stream->arr, sizeof(t_token) * stream->cap, sizeof(t_token) * new_cap);
-	if (!temp)
-		return (FAILURE);
-	stream->arr = temp;
-	stream->cap = new_cap;
-	return (SUCCESS);
-}
-
-int	append_token_stream(t_token_stream *stream, t_token_type type, char *data)
-{
-	if (stream->cap < stream->len + 2 && realloc_token_stream(stream, stream->cap << 1))
-		return (FAILURE);
-	stream->arr[stream->len].type = type;
-	if (type == TOKEN_LITERAL)
-		stream->arr[stream->len].data = data;
-	else
-		stream->arr[stream->len].data = NULL;
-	stream->arr[++stream->len].type = TOKEN_NONE;
-	return (SUCCESS);
-}
-
-char	*get_path_name(char *str)
+char	*get_path_name_with_equal_sign(char *str)
 {
 	char	*name;
 	size_t	len;
@@ -108,10 +26,11 @@ char	*get_path_name(char *str)
 	len = 0;
 	while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
 		++len;
-	name = malloc(len + 1);
+	name = malloc(len + 2);
 	if (!name)
 		return (NULL);
-	ft_strlcpy(name, str, len + 1);
+	ft_strlcpy(name, str, len + 2);
+	ft_strlcat(name, "=", len + 2);
 	return (name);
 }
 
@@ -132,9 +51,9 @@ size_t	expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar)
 	}
 	else if (ft_isalpha(*str) || *str == '_')
 	{
-		env_name = get_path_name(str);
+		env_name = get_path_name_with_equal_sign(str);
 		cat_buf(buf, ms_getenv(env_name, msvar->envp));
-		padding = ft_strlen(env_name);
+		padding = ft_strlen(env_name) - 1;
 		free(env_name);
 	}
 	else
@@ -231,39 +150,11 @@ t_token_stream	*tokenizer(char *str, t_msvar *msvar)
 			++str;
 		}
 	}
-	if (buf->length)
+	if (buf->length || !stream->len)
 	{
 		append_token_stream(stream, TOKEN_LITERAL, detach_buf(buf));
 		buf = NULL;
 	}
 	destroy_buf(buf);
 	return (stream);
-}
-
-void	print_token(t_token *t)
-{
-	#ifdef DEBUG
-	if (t->type == TOKEN_LITERAL)
-		fprintf(stderr, "LITERAL: %s\n", t->data);
-	else if (t->type == TOKEN_PIPE)
-		fprintf(stderr, "|\n");
-	else if (t->type == TOKEN_INPUT_REDIRECT)
-		fprintf(stderr, "<\n");
-	else if (t->type == TOKEN_HERE_DOC)
-		fprintf(stderr, "<<\n");
-	else if (t->type == TOKEN_OUTPUT_REDIRECT)
-		fprintf(stderr, ">\n");
-	else if (t->type == TOKEN_APPEND_REDIRECT)
-		fprintf(stderr, ">>\n");
-	else
-		fprintf(stderr, "unknown token\n");
-	#endif
-}
-
-void	print_token_stream(t_token_stream *ts)
-{
-	#ifdef DEBUG
-	for (size_t i = 0; ts->arr[i].type != TOKEN_NONE; ++i)
-		print_token(ts->arr + i);
-	#endif
 }

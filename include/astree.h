@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 16:05:11 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/24 17:21:03 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/27 07:20:25 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,14 @@ typedef struct s_logical_expression
 typedef enum e_node_type
 {
 	NODE_NONE = 0,
-	NODE_PIPE_SEG = (1 << 0),
-	// NT_LOGICAL_EXPRESSION 	= (1 << 1),
+	NODE_CEU = (1 << 0),
+	NODE_PIPE_SEG = (1 << 1),
+	// NT_LOGICAL_EXPRESSION 	= (1 << 2),
 }	t_node_type;
 
 typedef union u_ast_node_data
 {
+	t_ceu		*ceu;
 	t_pipe_seg	*pipe_seg;
 	// t_logic_expr	*logic_expr;
 }	t_ast_node_data;
@@ -56,7 +58,7 @@ t_ast	*create_ast_node(void);
 void	destroy_ast_node(t_ast *node);
 void	destroy_ast(t_ast *root);
 t_ast	*analyzer(t_token_stream *ts);
-int		ast_traversal(t_ast *root, t_ast *node, t_msvar *msvar);
+int		ast_traversal(t_ast *node, t_msvar *msvar);
 
 t_node_type	ast_node_type(t_ast *node);
 void 		ast_attach_binary_branch (t_ast *root , t_ast *left_node , t_ast *right_node);

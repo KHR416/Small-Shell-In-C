@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 19:47:47 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/24 19:01:14 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/27 07:15:39 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,23 @@ int	pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
 		{
 			perror("fork");
 			free(cpids);
+			while (i--)
+				wait(NULL);
 			return (EXIT_FAILURE);
 		}
 		if (!cpids[i])
 		{
+			free(cpids);
 			if (i < pipe_cnt)
 			{
 				close(pipefd[0]);
 				dup2(pipefd[1], STDOUT_FILENO);
 				close(pipefd[1]);
 			}
-			int	exit_status = ceu_exec(it->content, msvar);
-			free(cpids);
-			return (exit_status);
+			clear_ttydup(msvar);
+			int	exit_status = ceu_exec(it->content, msvar, 1);
+			clear_msvar(msvar);
+			exit(exit_status);
 		}
 		if (i < pipe_cnt)
 		{
@@ -70,8 +74,11 @@ int	pipe_seg_exec(t_pipe_seg *ps, t_msvar *msvar)
 		}
 		it = it->next;
 	}
+	restore_ttydup(msvar);
 	for (i = 0; i < cpid_cnt; ++i)
 		waitpid(cpids[i], &wstatus, 0);
 	free(cpids);
+	if (WIFSIGNALED(wstatus))
+		return (128 + WTERMSIG(wstatus));
 	return (WEXITSTATUS(wstatus));
 }

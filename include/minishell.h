@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 23:00:14 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/24 16:35:55 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/02/27 07:20:54 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,21 @@
 # define MINISHELL_H
 # define SUCCESS	0
 # define FAILURE	1
+# ifndef MEMCHECK
+#  ifndef DEBUG
+#   define MS_PROMPT	"minishell$ "
+#  else
+#   define MS_PROMPT	"debug$ "
+#  endif	// DEBUG
+# else
+#  ifndef DEBUG
+#   define MS_PROMPT	"memcheck$ "
+#  else
+#   define MS_PROMPT	"memcheck debug$ "
+#  endif	// DEBUG
+#endif	// MEMCHECK
+
+extern int	ms_signal;
 
 typedef struct s_msvar
 {
@@ -21,6 +36,12 @@ typedef struct s_msvar
 	char	**argv;
 	char	**envp;
 	int		exit_status;
+	int		ttydup[2];
+	#ifdef DEBUG
+	void	*ceu;
+	void	*ps;
+	#endif	// DEBUG
+	void	*ast;
 }	t_msvar;
 
 char	*ms_getcwd(void);
@@ -29,6 +50,9 @@ void	ms_envp_destroy(char **arr);
 char	*ms_getenv(char *name, char **envp);
 int		ms_setenv(char *name, char *value, char ***envp);
 int		ms_var_init(int argc, char **argv, char **envp, t_msvar *var);
-void	free_msvar(t_msvar *msvar);
+void	clear_msvar(t_msvar *msvar);
+void	clear_ttydup(t_msvar *msvar);
+int		restore_ttydup(t_msvar *msvar);
+char	*rl_gets(void);
 
 #endif	// MINISHELL_H
