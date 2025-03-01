@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:55:53 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/27 05:38:38 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/01 13:36:24 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include "ms_readline.h"
 # include "minishell.h"
 
-int	is_valid_builtins(t_command *command, t_msvar *var);
 int	ms_cd(char **args);
 int	ms_echo_n_option(char **args);
 int	ms_echo(char **args);

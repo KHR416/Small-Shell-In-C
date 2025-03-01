@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/25 18:31:52 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/01 16:52:07 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ int	ms_cd(char **args)
 	char	*abs_path;
 
 	abs_path = NULL;
+	if (!args[1])
+		return (SUCCESS);
 	if (cd_error_checker(args) && !how_many_dots(args))
 		return (cd_error_checker(args));
 	if (how_many_dots(args) == 1 || args[1][0] == '.')
@@ -73,7 +75,7 @@ int	ms_cd(char **args)
 	else if (ft_strcmp(args[1], "..") == 0)
 		abs_path = set_to_parent_dir(abs_path);
 	else
-		abs_path = args[1];
+		abs_path = ft_strdup(args[1]);
 	if (!abs_path)
 		return (FAILURE);
 	if (chdir(abs_path) == -1)
