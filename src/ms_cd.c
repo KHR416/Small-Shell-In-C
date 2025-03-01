@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/01 22:01:43 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/01 22:08:18 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,18 @@ static int	how_many_dots(char **args)
 int	ms_cd(char **args)
 {
 	char	*abs_path;
+	int		error_code;
 
 	abs_path = NULL;
+	error_code = 0;
 	if (!args[1])
 		return (SUCCESS);
-	if (cd_error_checker(args) && !how_many_dots(args))
-		return (cd_error_checker(args));
+	if (!how_many_dots(args))
+	{
+		error_code = cd_error_checker(args);
+		if (error_code != SUCCESS)
+			return (error_code);
+	}
 	if (how_many_dots(args) == 1)
 		abs_path = ms_getcwd();
 	else if (how_many_dots(args) == 2)
