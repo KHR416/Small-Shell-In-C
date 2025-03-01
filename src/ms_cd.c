@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/01 16:52:07 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/01 22:01:43 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,13 @@ static char	*set_to_parent_dir(char *abs_path)
 {
 	char	*result;
 	size_t	diff;
+	char	*last_slash;
 
-	diff = (size_t)(abs_path - ft_strrchr(abs_path, '/'));
+	last_slash = ft_strrchr(abs_path, '/');
+	if (last_slash == abs_path)
+		diff = 1;
+	else
+		diff = (size_t)(last_slash - abs_path);
 	result = ft_substr(abs_path, 0, diff);
 	free(abs_path);
 	return (result);
@@ -45,10 +50,7 @@ static char	*set_to_parent_dir(char *abs_path)
 
 static int	how_many_dots(char **args)
 {
-	int	count;
-
-	count = ft_strlen(args[1]);
-	if (count == 1 || args[1][0] == '.')
+	if (ft_strcmp(args[1], ".") == 0)
 		return (1);
 	else if (ft_strcmp(args[1], "..") == 0)
 		return (2);
@@ -70,10 +72,13 @@ int	ms_cd(char **args)
 		return (SUCCESS);
 	if (cd_error_checker(args) && !how_many_dots(args))
 		return (cd_error_checker(args));
-	if (how_many_dots(args) == 1 || args[1][0] == '.')
+	if (how_many_dots(args) == 1)
 		abs_path = ms_getcwd();
-	else if (ft_strcmp(args[1], "..") == 0)
+	else if (how_many_dots(args) == 2)
+	{
+		abs_path = ms_getcwd();
 		abs_path = set_to_parent_dir(abs_path);
+	}
 	else
 		abs_path = ft_strdup(args[1]);
 	if (!abs_path)

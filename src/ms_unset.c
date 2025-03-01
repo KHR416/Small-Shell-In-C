@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 21:23:36 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/27 05:39:08 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/01 21:16:08 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	ms_env_unset(char **envp, char *to_free)
 	size_t	str_len;
 	int		i;
 	int		j;
-	
+
 	i = 0;
 	while (envp[i] != NULL)
 	{
