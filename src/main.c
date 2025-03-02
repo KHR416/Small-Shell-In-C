@@ -10,6 +10,7 @@
 #include "astree.h"
 #include "minishell.h"
 #include "ms_signal.h"
+#include "ms_glob.h"
 
 void	print_banner()
 {

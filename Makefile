@@ -42,6 +42,7 @@ SRC := \
 	ms_exit.c \
 	ms_export.c \
 	ms_getcwd.c \
+	ms_glob.c \
 	ms_pwd.c \
 	ms_signal.c \
 	ms_unset.c \

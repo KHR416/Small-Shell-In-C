@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 19:31:29 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/17 19:47:44 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/02 11:41:21 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,10 @@
 # define MS_GLOB_H
 
 # include <stdlib.h>
+# include <dirent.h>
+# include "libft.h"
 
-typedef struct s_glob_match
-{
-	char	*word;
-	struct	s_glob_match *next;
-}	t_glob_match;
-
-typedef struct s_glob_result
-{
-	t_glob_match	*matches;
-	int				match_count;
-}	t_glob_result;
-
-t_glob_result	*ms_glob(char *pattern);
-void			ms_glob_free(t_glob_result *result);
+int		ms_fnmatch(char *pattern, char *string);
+char	**ms_glob(char *pattern);
 
 #endif
