@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 19:31:29 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/02 11:41:21 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/05 13:17:59 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <dirent.h>
 # include "libft.h"
 
-int		ms_fnmatch(char *pattern, char *string);
-char	**ms_glob(char *pattern);
+int		ms_fnmatch(char **pattern, char *string);
+char	**ms_glob(char **pattern);
 
 #endif
