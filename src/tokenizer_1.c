@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:06:42 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/27 08:57:39 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/06 01:30:34 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,9 @@
 #include <stdlib.h>
 #include <libft.h>
 #include <stdio.h>
+#include "generic_array.h"
 
-char	*get_path_name_with_equal_sign(char *str)
+char	*get_env_name(char *str)
 {
 	char	*name;
 	size_t	len;
@@ -26,11 +27,10 @@ char	*get_path_name_with_equal_sign(char *str)
 	len = 0;
 	while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
 		++len;
-	name = malloc(len + 2);
+	name = malloc(len + 1);
 	if (!name)
 		return (NULL);
-	ft_strlcpy(name, str, len + 2);
-	ft_strlcat(name, "=", len + 2);
+	ft_strlcpy(name, str, len + 1);
 	return (name);
 }
 
@@ -51,9 +51,9 @@ size_t	expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar)
 	}
 	else if (ft_isalpha(*str) || *str == '_')
 	{
-		env_name = get_path_name_with_equal_sign(str);
+		env_name = get_env_name(str);
 		cat_buf(buf, ms_getenv(env_name, msvar->envp));
-		padding = ft_strlen(env_name) - 1;
+		padding = ft_strlen(env_name);
 		free(env_name);
 	}
 	else
@@ -150,11 +150,327 @@ t_token_stream	*tokenizer(char *str, t_msvar *msvar)
 			++str;
 		}
 	}
-	if (buf->length || !stream->len)
+	if (buf->length)
 	{
 		append_token_stream(stream, TOKEN_LITERAL, detach_buf(buf));
 		buf = NULL;
 	}
 	destroy_buf(buf);
 	return (stream);
+}
+
+void	destroy_glob_data(char **data)
+{
+	size_t	i = 0;
+	while (data[i])
+		free(data[i++]);
+	free(data);
+}
+
+void	destroy_glob_data_wrap(void *data)
+{
+	destroy_glob_data(data);
+}
+
+int	expand_glob(t_token_list *list, t_buf **buf, t_gen_arr **arr)
+{
+	char	**data, **glob;
+	
+	if ((*buf)->length)
+	{
+		append_gen_arr(*arr, detach_buf(*buf), NULL);
+		*buf = create_buf();
+	}
+	data = (char **)detach_gen_arr(*arr);
+	glob = ms_glob(data);
+	if (!glob)
+	{
+		for (size_t i = 0; data[i]; ++i)
+		{
+			cat_buf(*buf, data[i]);
+			append_buf(*buf, '*');
+		}
+		destroy_glob_data(data);
+		append_token_list(list, TOKEN_LITERAL, detach_buf(*buf), free);
+		*buf = create_buf();
+	}
+	else
+	{
+		destroy_glob_data(data);
+		for (size_t i = 0; glob[i]; ++i)
+			append_token_list(list, TOKEN_LITERAL, glob[i], free);
+		free(glob);
+	}
+	*arr = create_gen_arr();
+	return (SUCCESS);
+}
+
+t_token_list	*tokenizer_test(char *str, t_msvar *msvar)
+{
+	t_token_list	*list = create_token_list();
+	t_quote_mode	mode = WITHOUT_QUOTE;
+	t_buf			*buf = create_buf();
+	t_gen_arr		*arr = create_gen_arr();
+	int				flag = 0;
+
+	while (*str)
+	{
+		if (mode == WITHOUT_QUOTE)
+		{
+			if (*str == '\'')
+				mode = SINGLE_QUOTE;
+			else if (*str == '"')
+				mode = DOUBLE_QUOTE;
+			else if (*str == '$')
+				str += expand_dollar_sign(buf, str, msvar);
+			else if (*str == ' ')
+			{
+				if (flag)
+				{
+					expand_glob(list, &buf, &arr);
+					flag = 0;
+				}
+				else if (buf->length)
+				{
+					append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+					buf = create_buf();
+				}
+			}
+			else if (*str == '<')
+			{
+				if (flag)
+				{
+					expand_glob(list, &buf, &arr);
+					flag = 0;
+				}
+				else if (buf->length)
+				{
+					append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+					buf = create_buf();
+				}
+				if (*(str + 1) == '<')
+				{
+					append_token_list(list, TOKEN_HERE_DOC, NULL, NULL);
+					++str;
+				}
+				else
+					append_token_list(list, TOKEN_INPUT_REDIRECT, NULL, NULL);
+			}
+			else if (*str == '>')
+			{
+				if (flag)
+				{
+					expand_glob(list, &buf, &arr);
+					flag = 0;
+				}
+				else if (buf->length)
+				{
+					append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+					buf = create_buf();
+				}
+				if (*(str + 1) == '>')
+				{
+					append_token_list(list, TOKEN_APPEND_REDIRECT, NULL, NULL);
+					++str;
+				}
+				else
+					append_token_list(list, TOKEN_OUTPUT_REDIRECT, NULL, NULL);
+			}
+			else if (*str == '*')
+			{
+				append_gen_arr(arr, detach_buf(buf), NULL);
+				buf = create_buf();
+				flag = 1;
+			}
+			else if (*str == '|')
+			{
+				if (flag)
+				{
+					expand_glob(list, &buf, &arr);
+					flag = 0;
+				}
+				else if (buf->length)
+				{
+					append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+					buf = create_buf();
+				}
+				append_token_list(list, TOKEN_PIPE, NULL, NULL);
+			}
+			else
+				append_buf(buf, *str);
+			++str;
+		}
+		else if (mode == SINGLE_QUOTE)
+		{
+			if (*str == '\'')
+				mode = WITHOUT_QUOTE;
+			else
+				append_buf(buf, *str);
+			++str;
+		}
+		else
+		{
+			if (*str == '"')
+				mode = WITHOUT_QUOTE;
+			else if (*str == '$')
+				str += expand_dollar_sign(buf, str, msvar);
+			else
+				append_buf(buf, *str);
+			++str;
+		}
+	}
+	if (flag)
+	{
+		expand_glob(list, &buf, &arr);
+		flag = 0;
+	}
+	else if (buf->length)
+	{
+		append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+		buf = NULL;
+	}
+	destroy_buf(buf);
+	destroy_gen_arr(arr, NULL);
+	return (list);
+}
+
+int	insert_glob(t_token_list *list, t_buf **buf, t_gen_arr **arr)
+{
+	if ((*buf)->length)
+	{
+		append_gen_arr(*arr, detach_buf(*buf), NULL);
+		*buf = create_buf();
+	}
+	append_token_list(list, TOKEN_GLOB, detach_gen_arr(*arr), destroy_glob_data_wrap);
+	*arr = create_gen_arr();
+	return (SUCCESS);
+}
+
+t_token_list	*tokenizer_test_glob(char *str, t_msvar *msvar)
+{
+	t_token_list	*list = create_token_list();
+	t_quote_mode	mode = WITHOUT_QUOTE;
+	t_buf			*buf = create_buf();
+	t_gen_arr		*arr = create_gen_arr();
+	int				flag = 0;
+
+	while (*str)
+	{
+		if (mode == WITHOUT_QUOTE)
+		{
+			if (*str == '\'')
+				mode = SINGLE_QUOTE;
+			else if (*str == '"')
+				mode = DOUBLE_QUOTE;
+			else if (*str == '$')
+				str += expand_dollar_sign(buf, str, msvar);
+			else if (*str == ' ')
+			{
+				if (flag)
+				{
+					insert_glob(list, &buf, &arr);
+					flag = 0;
+				}
+				else if (buf->length)
+				{
+					append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+					buf = create_buf();
+				}
+			}
+			else if (*str == '<')
+			{
+				if (flag)
+				{
+					insert_glob(list, &buf, &arr);
+					flag = 0;
+				}
+				else if (buf->length)
+				{
+					append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+					buf = create_buf();
+				}
+				if (*(str + 1) == '<')
+				{
+					append_token_list(list, TOKEN_HERE_DOC, NULL, NULL);
+					++str;
+				}
+				else
+					append_token_list(list, TOKEN_INPUT_REDIRECT, NULL, NULL);
+			}
+			else if (*str == '>')
+			{
+				if (flag)
+				{
+					insert_glob(list, &buf, &arr);
+					flag = 0;
+				}
+				else if (buf->length)
+				{
+					append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+					buf = create_buf();
+				}
+				if (*(str + 1) == '>')
+				{
+					append_token_list(list, TOKEN_APPEND_REDIRECT, NULL, NULL);
+					++str;
+				}
+				else
+					append_token_list(list, TOKEN_OUTPUT_REDIRECT, NULL, NULL);
+			}
+			else if (*str == '*')
+			{
+				append_gen_arr(arr, detach_buf(buf), NULL);
+				buf = create_buf();
+				flag = 1;
+			}
+			else if (*str == '|')
+			{
+				if (flag)
+				{
+					insert_glob(list, &buf, &arr);
+					flag = 0;
+				}
+				else if (buf->length)
+				{
+					append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+					buf = create_buf();
+				}
+				append_token_list(list, TOKEN_PIPE, NULL, NULL);
+			}
+			else
+				append_buf(buf, *str);
+			++str;
+		}
+		else if (mode == SINGLE_QUOTE)
+		{
+			if (*str == '\'')
+				mode = WITHOUT_QUOTE;
+			else
+				append_buf(buf, *str);
+			++str;
+		}
+		else
+		{
+			if (*str == '"')
+				mode = WITHOUT_QUOTE;
+			else if (*str == '$')
+				str += expand_dollar_sign(buf, str, msvar);
+			else
+				append_buf(buf, *str);
+			++str;
+		}
+	}
+	if (flag)
+	{
+		insert_glob(list, &buf, &arr);
+		flag = 0;
+	}
+	else if (buf->length)
+	{
+		append_token_list(list, TOKEN_LITERAL, detach_buf(buf), free);
+		buf = NULL;
+	}
+	destroy_buf(buf);
+	destroy_gen_arr(arr, NULL);
+	return (list);
 }

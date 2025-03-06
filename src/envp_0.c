@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 15:50:57 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/10 17:32:25 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/02 19:14:42 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,16 +81,20 @@ If no matching variable is found, the function returns `NULL`.
 */
 char	*ms_getenv(char *name, char **envp)
 {
-	size_t	envp_idx;
-	size_t	name_len;
+	size_t	env_name_len;
 
-	envp_idx = 0;
-	name_len = ft_strlen(name);
-	while (envp[envp_idx])
+	while (*envp)
 	{
-		if (!ft_memcmp(name, envp[envp_idx], name_len))
-			return (envp[envp_idx] + name_len + 1);
-		++envp_idx;
+		env_name_len = 0;
+		while ((*envp)[env_name_len] && (*envp)[env_name_len] != '=')
+			++env_name_len;
+		if (!ft_memcmp(name, *envp, env_name_len))
+		{
+			if ((*envp)[env_name_len] == '=')
+				return (*envp + env_name_len + 1);
+			return (NULL);
+		}
+		++envp;
 	}
 	return (NULL);
 }

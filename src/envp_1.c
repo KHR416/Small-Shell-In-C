@@ -6,29 +6,29 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 15:50:57 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/05 20:52:45 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/06 02:49:45 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libft.h>
 #include <stdlib.h>
 #include "minishell.h"
+#include "buffer.h"
 
 static char	*create_new_env(char *name, char *value)
 {
-	char	*env;
-	size_t	name_len;
-	size_t	value_len;
+	t_buf	*buf;
 
-	name_len = ft_strlen(name);
-	value_len = ft_strlen(value);
-	env = malloc(name_len + value_len + 2);
-	if (!env)
+	buf = create_buf();
+	if (!buf)
 		return (NULL);
-	ft_strlcpy(env, name, name_len + 1);
-	ft_strlcat(env, "=", name_len + value_len + 2);
-	ft_strlcat(env, value, name_len + value_len + 2);
-	return (env);
+	cat_buf(buf, name);
+	if (value)
+	{
+		append_buf(buf, '=');
+		cat_buf(buf, value);
+	}
+	return (detach_buf(buf));
 }
 
 static int	is_valid_name(char *name)
@@ -75,20 +75,27 @@ NOTES
 The argument `name` must consist solely of uppercase letters, digits, and the
 underscore ('_') and do not begin with a digit. If `name` contains other
 characters or starts with a digit, it is considered invalid.
+In the case that `value` is `NULL`, it will clear the equal sign and its value
+if the env is exist or will export env name without the equal sign and value.
 */
 int	ms_setenv(char *name, char *value, char ***envp)
 {
-	size_t	name_len;
+	size_t	env_name_len;
 	size_t	envp_idx;
 	void	*temp;
 
 	if(!is_valid_name(name))
 		return (FAILURE);
-	name_len = ft_strlen(name);
+	
 	envp_idx = -1;
 	while ((*envp)[++envp_idx])
-		if (!ft_memcmp(name, (*envp)[envp_idx], name_len))
+	{
+		env_name_len = 0;
+		while ((*envp)[env_name_len] && (*envp)[env_name_len] != '=')
+			++env_name_len;
+		if (!ft_memcmp(name, (*envp)[envp_idx], env_name_len))
 			break ;
+	}
 	if (!(*envp)[envp_idx])
 	{
 		if (realloc_envp(envp, envp_idx + 1, envp_idx + 2))

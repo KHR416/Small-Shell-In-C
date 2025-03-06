@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:08:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/27 08:49:46 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/06 01:31:11 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,16 @@ typedef enum e_token_type
 	// TOKEN_OR_OPERATOR = 1 << 7,
 	// TOKEN_PARENTHESIS_OPEN = 1 << 8,
 	// TOKEN_PARENTHESIS_CLOSE = 1 << 9,
+	#ifdef DEBUG
+	TOKEN_GLOB = 1 << 10,
+	#endif	// DEBUG
 }	t_token_type;
 
 typedef struct s_token
 {
 	t_token_type	type;
-	char			*data;
+	void			*data;
+	void 			(*del_func)(void *);
 }	t_token;
 
 typedef struct s_token_stream
@@ -55,14 +59,29 @@ t_token_stream	*create_token_stream(void);
 void			destroy_token_stream(t_token_stream *stream);
 int				realloc_token_stream(t_token_stream *stream, size_t new_cap);
 int				append_token_stream(t_token_stream *stream, t_token_type type, char *data);
-char			*get_path_name_with_equal_sign(char *str);
+char			*get_env_name(char *str);
 size_t			expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar);
 t_token_stream	*tokenizer(char *str, t_msvar *msvar);
 void			print_error_unexpected_token(t_token_type t);
 
+typedef struct s_list t_token_node;
+typedef struct s_token_list
+{
+	t_token_node	*head;
+	t_token_node	*tail;
+}	t_token_list;
+
+t_token_node	*create_token_node(t_token_type type, void *data, void (*del_func)(void *));
+t_token_list	*create_token_list(void);
+void			destroy_token_list(t_token_list *list);
+int				append_token_list(t_token_list *list, t_token_type type, void *data, void (*del_func)(void *));
+
+t_token_list	*tokenizer_test(char *str, t_msvar *msvar);
 # ifdef DEBUG
 
 void	print_token(t_token *t);
 void	print_token_stream(t_token_stream *ts);
+void	print_token_list(t_token_list *list);
+t_token_list	*tokenizer_test_glob(char *str, t_msvar *msvar);
 # endif	// DEBUG
 #endif	// TOKEN_h

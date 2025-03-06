@@ -6,14 +6,12 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 23:00:14 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/27 07:20:54 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/02 21:39:12 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
-# define SUCCESS	0
-# define FAILURE	1
 # ifndef MEMCHECK
 #  ifndef DEBUG
 #   define MS_PROMPT	"minishell$ "
@@ -27,6 +25,8 @@
 #   define MS_PROMPT	"memcheck debug$ "
 #  endif	// DEBUG
 #endif	// MEMCHECK
+# include "ms_glob.h"
+# include "ms_def.h"
 
 extern int	ms_signal;
 

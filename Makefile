@@ -18,7 +18,8 @@ CFLAGS += -g -D DEBUG
 SRC_DEBUG := \
 	tokenizer_debug.c\
 	ceu_debug.c\
-	pipe_seg_debug.c
+	pipe_seg_debug.c\
+	token_list_debug.c
 endif
 
 ifdef MEMCHECK
@@ -52,6 +53,8 @@ SRC := \
 	readline.c \
 	tokenizer_0.c \
 	tokenizer_1.c \
+	generic_array.c \
+	token_list.c \
 	$(SRC_DEBUG)
 
 OBJ := $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
