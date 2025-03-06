@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   envp_1.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 15:50:57 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/06 02:49:45 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/06 13:55:03 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,9 @@ int	ms_setenv(char *name, char *value, char ***envp)
 	while ((*envp)[++envp_idx])
 	{
 		env_name_len = 0;
-		while ((*envp)[env_name_len] && (*envp)[env_name_len] != '=')
+		// while ((*envp)[env_name_len] && (*envp)[env_name_len] != '=')
+	if (!ft_strncmp((*envp)[envp_idx], name, env_name_len) && \
+    ((*envp)[envp_idx][env_name_len] == '=' || (*envp)[envp_idx][env_name_len] == '\0'))
 			++env_name_len;
 		if (!ft_memcmp(name, (*envp)[envp_idx], env_name_len))
 			break ;

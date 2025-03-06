@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/17 19:34:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/05 13:21:47 by chakim           ###   ########.fr       */
+/*   Created: 2025/03/06 13:01:45       by                   #+#    #+#             */
+/*   Updated: 2025/03/06 13:01:45 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,21 @@ int	is_external_dir(char **pattern)
 	return (0);
 }
 
+int	is_hidden_file_included(char **pattern)
+{
+	if (pattern[0] != NULL && pattern[0][0] == '\0' \
+	&& pattern[1] != NULL && pattern[1][0] == '.')
+		return (1);
+	return (0);
+}
+
 char	**ms_glob(char **pattern)
 {
 	DIR 			*dir;
 	struct dirent	*ent;
 	char			**files;
 	int				i;
+	int				is_hidden_file;
 
 	dir = opendir(".");
 	if (dir == NULL)
@@ -80,12 +89,13 @@ char	**ms_glob(char **pattern)
 	i = 0;
 	if (is_external_dir(pattern))
 		return (NULL);
+	is_hidden_file = is_hidden_file_included(pattern);
 	while (1)
 	{
 		ent = readdir(dir);
-        if (ent == NULL)
-            break;
-		if (ft_strncmp(ent->d_name, ".", 1) == 0)
+		if (ent == NULL)
+			break ;
+		if (!is_hidden_file && ft_strncmp(ent->d_name, ".", 1) == 0)
 			continue ;
 		if (ms_fnmatch(pattern, ent->d_name) == 0)
 		{
