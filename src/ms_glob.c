@@ -11,102 +11,62 @@
 /* ************************************************************************** */
 
 #include "ms_glob.h"
+#include "generic_array.h"
+#include "ms_def.h"
 
-int	ms_fnmatch(char **pattern, char *string)
+int	ms_fnmatch(char **patterns, char *string)
 {
-	char	*p;
-	char	*n;
-	int		i;
+	char	*matched;
 
-	i = 0;
-	while (pattern[i] != NULL)
-	{
-		p = pattern[i];
-		n = string;
-		while (*p != '\0')
+    while (*patterns)
+    {
+		if (**patterns)
 		{
-			if (*p == '*')
-			{
-				while (*p == '*')
-					++p;
-				if (*p == '\0')
-					return (EXIT_SUCCESS);
-				while (*n != '\0')
-				{
-					if (ms_fnmatch(&p, n) == 0)
-						return (EXIT_SUCCESS);
-					++n;
-				}
-				return (EXIT_FAILURE);
-			}
-			else
-			{
-				if (*p != *n)
-					return (EXIT_FAILURE);
-				++p;
-				++n;
-			}
+			matched = ft_strnstr(string, *patterns, ft_strlen(string));
+			if (!matched)
+				return (FAILURE);
+			string = matched + ft_strlen(*patterns);
 		}
-		++i;
-	}
-	return (EXIT_SUCCESS);
+		++patterns;
+    }
+    return (SUCCESS);
 }
 
-int	is_external_dir(char **pattern)
+void	*my_strdup(void *str)
 {
-	int	i;
-
-	i = 0;
-	while (pattern[i] != NULL)
-	{
-		if (ft_strchr(pattern[i], '/') != 0)
-			return (1);
-		++i;
-	}
-	return (0);
+	return (ft_strdup(str));
 }
 
-int	is_hidden_file_included(char **pattern)
+char	**ms_glob(char **patterns)
 {
-	if (pattern[0] != NULL && pattern[0][0] == '\0' \
-	&& pattern[1] != NULL && pattern[1][0] == '.')
-		return (1);
-	return (0);
-}
-
-char	**ms_glob(char **pattern)
-{
-	DIR 			*dir;
+	DIR				*dir;
 	struct dirent	*ent;
-	char			**files;
-	int				i;
-	int				is_hidden_file;
+	t_gen_arr		*files;
+	int				is_hidden;
 
+	files = create_gen_arr();
 	dir = opendir(".");
-	if (dir == NULL)
-		return (NULL);
-	files = NULL;
-	i = 0;
-	if (is_external_dir(pattern))
-		return (NULL);
-	is_hidden_file = is_hidden_file_included(pattern);
+	if (**patterns == '.')
+		is_hidden = 1;
+	else
+		is_hidden = 0;
 	while (1)
 	{
 		ent = readdir(dir);
-		if (ent == NULL)
+		if (!ent)
 			break ;
-		if (!is_hidden_file && ft_strncmp(ent->d_name, ".", 1) == 0)
+		if ((is_hidden && *ent->d_name != '.') || (!is_hidden && *ent->d_name == '.'))
 			continue ;
-		if (ms_fnmatch(pattern, ent->d_name) == 0)
+		if (!ms_fnmatch(patterns, ent->d_name))
 		{
-			files = ft_realloc(files, sizeof(char *) * i, sizeof(char *) * (i + 2));
-			files[i] = ft_strdup(ent->d_name);
-			++i;
+			if (append_gen_arr(files, ent->d_name, my_strdup))
+			{
+				closedir(dir);
+				destroy_gen_arr(files, free);
+				return (NULL);
+			}
 		}
 	}
 	closedir(dir);
-	if (files == NULL)
-		return (NULL);
-	files[i] = NULL;
-	return (files);
+	return ((char **)detach_gen_arr(files));
 }
