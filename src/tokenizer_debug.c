@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:06:42 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/06 01:54:51 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/07 12:36:42 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,14 @@ void	print_token(t_token *t)
 				break ;
 		}
 	}
+	else if (t->type == TOKEN_AND_OPERATOR)
+		fprintf(stderr, "&&\n");
+	else if (t->type == TOKEN_OR_OPERATOR)
+		fprintf(stderr, "||\n");
+	else if (t->type == TOKEN_PARENTHESIS_OPEN)
+		fprintf(stderr, "(\n");
+	else if (t->type == TOKEN_PARENTHESIS_CLOSE)
+		fprintf(stderr, ")\n");
 	else
 		fprintf(stderr, "unknown token\n");
 }

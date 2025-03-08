@@ -24,7 +24,7 @@ int	main(int argc, char **argv, char **envp)
 			free(str);
 			continue ;
 		}
-		ts = tokenizer(str, &msvar);
+		ts = tokenizer_arr(str, &msvar);
 		free(str);
 		if (ts->len)
 		{

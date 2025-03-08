@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:45:08 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/06 00:35:34 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/07 22:31:39 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	destroy_arr(void **arr, void (*del_func)(void *))
 	free(arr);
 }
 
-void	clear_gen_arr(t_gen_arr *arr, void (*del_func)(void *))
+void	destroy_void_arr(void **arr, void (*del_func)(void *))
 {
 	size_t	i;
 
@@ -61,17 +61,23 @@ void	clear_gen_arr(t_gen_arr *arr, void (*del_func)(void *))
 		return ;
 	i = 0;
 	if (del_func)
-		while (arr->data[i])
-			del_func(arr->data[i++]);
+		while (arr[i])
+			del_func(arr[i++]);
+	free(arr);
+}
+
+// Be aware before use this function, all data was must shallow copied.
+void	clear_gen_arr(t_gen_arr *arr)
+{
+	if (!arr)
+		return ;
 	arr->data[0] = NULL;
 	arr->length = 0;
 }
 
 void	destroy_gen_arr(t_gen_arr *arr, void (*del_func)(void *))
 {
-	clear_gen_arr(arr, del_func);
-	if (arr)
-		free(arr->data);
+	destroy_void_arr(arr->data, del_func);
 	free(arr);
 }
 

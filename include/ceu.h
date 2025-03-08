@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/27 07:12:26 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/07 23:08:40 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,16 @@ typedef struct s_output_redirection
 // If there are no commands, like `<infile >outfile`, argv will be set to `NULL`
 typedef struct s_commaned_excution_unit
 {
-	t_list	*ir_list;
-	t_list	*or_list;
+	t_in_redir	**ir_arr;
+	t_out_redir	**or_arr;
 	char	**argv;
 }	t_ceu;
 
 t_in_redir	*create_in_redir(t_in_redir_type type, char *data);
 t_out_redir	*create_out_redir(t_out_redir_type type, char *data);
 void		**list_to_arr(t_list *lst, void *(*copy)());
-void		destroy_in_redir(void *ir_list);
-void		destroy_out_redir(void *or_list);
+void		destroy_in_redir(void *ir_arr);
+void		destroy_out_redir(void *or_arr);
 void		destroy_argv(char **argv);
 void		destroy_ceu(void *ceu);
 t_ceu		*create_ceu(t_token *iter_begin, t_token *iter_end);
@@ -66,8 +66,8 @@ int			ceu_exec(t_ceu *ceu, t_msvar *msvar, int flag_pipe_seg);
 
 int			print_in_redir(t_in_redir *ir);
 int			print_out_redir(t_out_redir *or);
-int			print_ir_list(t_list *ir_list);
-int			print_or_list(t_list *or_list);
+int			print_ir_arr(t_in_redir **ir_arr);
+int			print_or_arr(t_out_redir **or_arr);
 int			print_argv(char **argv);
 int			print_ceu(t_ceu *ceu);
 # endif	// DEBUG

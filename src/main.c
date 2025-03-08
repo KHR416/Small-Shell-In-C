@@ -77,13 +77,13 @@ char	*readline(const char *prompt)
 }
 #endif
 
-int	process_here_doc_redirection(t_buf *buf, t_list *ir_it)
+int	process_here_doc_redirection(t_buf *buf, t_in_redir **ir_it)
 {
-	while (ir_it)
+	while (*ir_it)
 	{
-		if (((t_in_redir *)ir_it->content)->type == IR_DEFAULT)
-			ir_it = ir_it->next;
-		else if (((t_in_redir *)ir_it->content)->type == IR_HERE_DOC)
+		if ((*ir_it)->type == IR_DEFAULT)
+			++ir_it;
+		else if ((*ir_it)->type == IR_HERE_DOC)
 		{
 			int	fd = open(buf->buffer, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 			while (1)
@@ -91,10 +91,10 @@ int	process_here_doc_redirection(t_buf *buf, t_list *ir_it)
 				char	*str = readline("> ");
 				if (!str)
 				{
-					print_warning_heredoc_eof(((t_in_redir *)ir_it->content)->name);
+					print_warning_heredoc_eof((*ir_it)->name);
 					break ;
 				}
-				else if (!ft_memcmp(str, ((t_in_redir *)ir_it->content)->name, ft_strlen(((t_in_redir *)ir_it->content)->name)))
+				else if (!ft_memcmp(str, (*ir_it)->name, ft_strlen((*ir_it)->name)))
 				{
 					free(str);
 					break ;
@@ -104,9 +104,9 @@ int	process_here_doc_redirection(t_buf *buf, t_list *ir_it)
 				ft_putchar_fd('\n', fd);
 			}
 			close(fd);
-			free(((t_in_redir *)ir_it->content)->name);
-			((t_in_redir *)ir_it->content)->name = strdup(buf->buffer);
-			if (!((t_in_redir *)ir_it->content)->name)
+			free((*ir_it)->name);
+			(*ir_it)->name = strdup(buf->buffer);
+			if (!(*ir_it)->name)
 			{
 				// Exception!
 			}
@@ -114,7 +114,7 @@ int	process_here_doc_redirection(t_buf *buf, t_list *ir_it)
 			{
 				// Exception!
 			}
-			ir_it = ir_it->next;
+			++ir_it;
 		}
 		else
 		{
@@ -128,7 +128,7 @@ int	process_here_doc_recursive(t_ast *node, t_buf *buf)
 {
 	if (node->type == NODE_CEU)
 	{
-		process_here_doc_redirection(buf, node->data->ceu->ir_list);
+		process_here_doc_redirection(buf, node->data->ceu->ir_arr);
 		return (SUCCESS);
 	}
 	else if (node->type == NODE_PIPE_SEG) // or CEU
@@ -136,7 +136,7 @@ int	process_here_doc_recursive(t_ast *node, t_buf *buf)
 		t_list	*pipe_it = node->data->pipe_seg->ceu_list;
 		while (pipe_it)
 		{
-			process_here_doc_redirection(buf, ((t_ceu *)(pipe_it->content))->ir_list);
+			process_here_doc_redirection(buf, ((t_ceu *)(pipe_it->content))->ir_arr);
 			pipe_it = pipe_it->next;
 		}
 		return (SUCCESS);
@@ -176,7 +176,7 @@ void	ms_loop(t_msvar *msvar)
 			free(str);
 			continue ;
 		}
-		ts = tokenizer(str, msvar);
+		ts = tokenizer_arr(str, msvar);
 		free(str);
 		if (!ts)
 			continue ;

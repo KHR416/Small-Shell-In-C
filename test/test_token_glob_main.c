@@ -20,7 +20,7 @@ int	main(int argc, char **argv, char **envp)
 			free(str);
 			continue ;
 		}
-		list = tokenizer_test_glob(str, &msvar);
+		list = tokenizer_list(str, &msvar);
 		free(str);
 		if (!list)
 			continue ;

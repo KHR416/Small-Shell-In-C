@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/25 16:35:42 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/07 23:07:32 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,11 +113,15 @@ void	**list_to_arr(t_list *lst, void *(*dup)())
 	return (arr);
 }
 
+#include "generic_array.h"
+
 t_ceu	*create_ceu(t_token *iter_begin, t_token *iter_end)
 {
 	t_ceu	*ceu;
-	t_list	*argv_list;
 	void	*temp;
+	t_gen_arr	*ir_arr = create_gen_arr();
+	t_gen_arr	*or_arr = create_gen_arr();
+	t_gen_arr	*argv = create_gen_arr();
 
 	if (iter_begin == iter_end)
 	{
@@ -127,7 +131,6 @@ t_ceu	*create_ceu(t_token *iter_begin, t_token *iter_end)
 	ceu = ft_calloc(1, sizeof(t_ceu));
 	if (!ceu)
 		return (NULL);
-	argv_list = NULL;
 	while (iter_begin < iter_end)
 	{
 		if (iter_begin->type == TOKEN_INPUT_REDIRECT)
@@ -136,16 +139,21 @@ t_ceu	*create_ceu(t_token *iter_begin, t_token *iter_end)
 			{
 				print_error_unexpected_token(iter_begin->type);
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
 			temp = create_in_redir(IR_DEFAULT, iter_begin->data);
-			if (!temp || ft_lstpush_back(&ceu->ir_list, temp))
+			if (!temp)
 			{
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
+			append_gen_arr(ir_arr, temp, NULL);
 		}
 		else if (iter_begin->type == TOKEN_HERE_DOC)
 		{
@@ -153,16 +161,21 @@ t_ceu	*create_ceu(t_token *iter_begin, t_token *iter_end)
 			{
 				print_error_unexpected_token(iter_begin->type);
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
 			temp = create_in_redir(IR_HERE_DOC, iter_begin->data);
-			if (!temp || ft_lstpush_back(&ceu->ir_list, temp))
+			if (!temp)
 			{
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
+			append_gen_arr(ir_arr, temp, NULL);
 		}
 		else if (iter_begin->type == TOKEN_OUTPUT_REDIRECT)
 		{
@@ -170,16 +183,21 @@ t_ceu	*create_ceu(t_token *iter_begin, t_token *iter_end)
 			{
 				print_error_unexpected_token(iter_begin->type);
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
 			temp = create_out_redir(OR_DEFAULT, iter_begin->data);
-			if (!temp || ft_lstpush_back(&ceu->or_list, temp))
+			if (!temp)
 			{
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
+			append_gen_arr(or_arr, temp, NULL);
 		}
 		else if (iter_begin->type == TOKEN_APPEND_REDIRECT)
 		{
@@ -187,44 +205,49 @@ t_ceu	*create_ceu(t_token *iter_begin, t_token *iter_end)
 			{
 				print_error_unexpected_token(iter_begin->type);
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
 			temp = create_out_redir(OR_APPEND, iter_begin->data);
-			if (!temp || ft_lstpush_back(&ceu->or_list, temp))
+			if (!temp)
 			{
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
+			append_gen_arr(or_arr, temp, NULL);
 		}
 		else if (iter_begin->type == TOKEN_LITERAL)
 		{
 			temp = ft_strdup(iter_begin->data);
-			if (!temp || ft_lstpush_back(&argv_list, temp))
+			if (!temp)
 			{
 				destroy_ceu(ceu);
-				ft_lstclear(&argv_list, free);
+				destroy_gen_arr(ir_arr, destroy_in_redir);
+				destroy_gen_arr(or_arr, destroy_out_redir);
+				destroy_gen_arr(argv, free);
 				return (NULL);
 			}
+			append_gen_arr(argv, temp, NULL);
 		}
 		else
 		{
 			print_error_unexpected_token(iter_begin->type);
 			destroy_ceu(ceu);
-			ft_lstclear(&argv_list, free);
+			destroy_gen_arr(ir_arr, destroy_in_redir);
+			destroy_gen_arr(or_arr, destroy_out_redir);
+			destroy_gen_arr(argv, free);
 			return (NULL);
 		}
 		++iter_begin;
 	}
-	ceu->argv = (char **)list_to_arr(argv_list, (void *)ft_strdup);
-	if (!ceu->argv)
-	{
-		destroy_ceu(ceu);
-		ft_lstclear(&argv_list, free);
-		return (NULL);
-	}
-	ft_lstclear(&argv_list, free);
+	ceu->argv = (char **)detach_gen_arr(argv);
+	ceu->ir_arr = (t_in_redir **)detach_gen_arr(ir_arr);
+	ceu->or_arr = (t_out_redir **)detach_gen_arr(or_arr);
 	return (ceu);
 }
 
@@ -232,8 +255,8 @@ void	destroy_ceu(void *ceu)
 {
 	if (!ceu)
 		return ;
-	ft_lstclear(&((t_ceu *)ceu)->ir_list, destroy_in_redir);
-	ft_lstclear(&((t_ceu *)ceu)->or_list, destroy_out_redir);
-	destroy_argv(((t_ceu *)ceu)->argv);
+	destroy_void_arr((void **)((t_ceu *)ceu)->ir_arr, destroy_in_redir);
+	destroy_void_arr((void **)((t_ceu *)ceu)->or_arr, destroy_out_redir);
+	destroy_void_arr((void **)((t_ceu *)ceu)->argv, free);
 	free(ceu);
 }

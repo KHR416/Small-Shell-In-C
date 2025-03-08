@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/25 16:35:45 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/07 23:10:25 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,10 @@ int	print_in_redir(t_in_redir *ir)
 	return (SUCCESS);
 }
 
-int	print_ir_list(t_list *ir)
+int	print_ir_arr(t_in_redir **ir)
 {
-	while (ir)
-	{
-		print_in_redir(ir->content);
-		ir = ir->next;
-	}
+	while (*ir)
+		print_in_redir(*ir++);
 	return (SUCCESS);
 }
 
@@ -52,13 +49,10 @@ int	print_out_redir(t_out_redir *or)
 	return (SUCCESS);
 }
 
-int	print_or_list(t_list *or)
+int	print_or_arr(t_out_redir **or)
 {
-	while (or)
-	{
-		print_out_redir(or->content);
-		or = or->next;
-	}
+	while (*or)
+		print_out_redir(*or++);
 	return (SUCCESS);
 }
 
@@ -75,9 +69,9 @@ int	print_ceu(t_ceu *ceu)
 {
 	if (!ceu)
 		return (FAILURE);
-	if (print_ir_list(ceu->ir_list))
+	if (print_ir_arr(ceu->ir_arr))
 		return (FAILURE);
-	if (print_or_list(ceu->or_list))
+	if (print_or_arr(ceu->or_arr))
 		return (FAILURE);
 	if (print_argv(ceu->argv))
 		return (FAILURE);

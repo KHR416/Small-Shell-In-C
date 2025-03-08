@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 16:32:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/27 08:18:12 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/07 23:15:58 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,60 +22,56 @@
 #define TMP_FILE ".minishell_tmp_file"
 #include "builtin.h"
 
-int	process_in_redir(t_list *ir_list)
+int	process_in_redir(t_in_redir **ir_arr)
 {
 	int		fd;
 
-	while (ir_list)
+	while (*ir_arr)
 	{
-		if (((t_in_redir *)ir_list->content)->type == IR_DEFAULT)
+		if ((*ir_arr)->type == IR_DEFAULT)
 		{
-			fd = open(((t_in_redir *)ir_list->content)->name, O_RDONLY);
+			fd = open((*ir_arr)->name, O_RDONLY);
 			if (fd < 0)
 			{
 				ft_putstr_fd("minishell: ", STDERR_FILENO);
-				perror(((t_in_redir *)ir_list->content)->name);
+				perror((*ir_arr)->name);
 				return (FAILURE);
 			}
-			if (!ir_list->next)
-				dup2(fd, STDIN_FILENO);
+			dup2(fd, STDIN_FILENO);
 			close(fd);
 		}
-		else if (((t_in_redir *)ir_list->content)->type == IR_HERE_DOC)
+		else if ((*ir_arr)->type == IR_HERE_DOC)
 		{
-			fd = open(((t_in_redir *)ir_list->content)->name, O_RDONLY);
+			fd = open((*ir_arr)->name, O_RDONLY);
 			if (fd < 0)
 			{
 				ft_putstr_fd("minishell: ", STDERR_FILENO);
-				perror(((t_in_redir *)ir_list->content)->name);
+				perror((*ir_arr)->name);
 				return (FAILURE);
 			}
-			if (!ir_list->next)
-				dup2(fd, STDIN_FILENO);
+			dup2(fd, STDIN_FILENO);
 			close(fd);
-			unlink(((t_in_redir *)ir_list->content)->name);
-			if (!ir_list->next)
-				dup2(fd, STDIN_FILENO);
+			unlink((*ir_arr)->name);
 		}
 		else
 		{
 			// Exception
 		}
-		ir_list = ir_list->next;
+		++ir_arr;
 	}
 	return (SUCCESS);
 }
 
-int	proces_out_redir(t_list *or_list)
+int	proces_out_redir(t_out_redir **or_arr)
 {
 	int	fd;
 
-	while (or_list)
+	while (*or_arr)
 	{
-		if (((t_out_redir *)or_list->content)->type == OR_DEFAULT)
-			fd = open(((t_out_redir *)or_list->content)->name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (((t_out_redir *)or_list->content)->type == OR_APPEND)
-			fd = open(((t_out_redir *)or_list->content)->name, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if ((*or_arr)->type == OR_DEFAULT)
+			fd = open((*or_arr)->name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		else if ((*or_arr)->type == OR_APPEND)
+			fd = open((*or_arr)->name, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else
 		{
 			// Exception
@@ -83,12 +79,12 @@ int	proces_out_redir(t_list *or_list)
 		if (fd < 0)
 		{
 			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			perror(((t_out_redir *)or_list->content)->name);
+			perror((*or_arr)->name);
 			return (FAILURE);
 		}
 		dup2(fd, STDOUT_FILENO);
 		close(fd);
-		or_list = or_list->next;
+		++or_arr;
 	}
 	return (SUCCESS);
 }
@@ -156,9 +152,9 @@ void	try_command_execve(char **argv, char **envp)
 
 int	ceu_exec(t_ceu *ceu, t_msvar *msvar, int flag_pipe_seg)
 {
-	if (process_in_redir(ceu->ir_list))
+	if (process_in_redir(ceu->ir_arr))
 		return (EXIT_FAILURE);
-	if (proces_out_redir(ceu->or_list))
+	if (proces_out_redir(ceu->or_arr))
 		return (EXIT_FAILURE);
 	if (!ceu->argv[0])
 		return (EXIT_SUCCESS);

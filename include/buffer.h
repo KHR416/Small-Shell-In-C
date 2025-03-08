@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 19:49:22 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/14 22:23:40 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/07 19:54:46 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define BUFFER_H
 # include <unistd.h>
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE	1024
+#  define BUFFER_SIZE	64
 # endif	// BUFFER_SIZE
 
 typedef struct s_buf

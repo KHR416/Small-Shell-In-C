@@ -22,8 +22,10 @@ int	main(int argc, char **argv, char **envp)
 			free(str);
 			continue ;
 		}
-		list = tokenizer_test(str, &msvar);
+		list = tokenizer_list_expand(str, &msvar);
 		free(str);
+		if (!list)
+			continue ;
 		print_token_list(list);
 		destroy_token_list(list);
 	}

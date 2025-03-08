@@ -17,7 +17,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		if (!(str = rl_gets()))
 			break ;
-		ts = tokenizer(str, &msvar);
+		ts = tokenizer_arr(str, &msvar);
 		free(str);
 		if (ts->len)
 		{
