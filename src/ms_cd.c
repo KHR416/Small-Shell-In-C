@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/01 22:08:18 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/14 16:28:37 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	cd_error_checker(char **args)
 		printf("minishell: cd: %s: No such file or directory\n", args[1]);
 		return (127);
 	}
-	else if (access(args[1], R_OK) == -1)
+	if (access(args[1], R_OK) == -1)
 	{
 		printf("minishell: cd: %s: Permission denied\n", args[1]);
 		return (126);
@@ -38,6 +38,8 @@ static char	*set_to_parent_dir(char *abs_path)
 	size_t	diff;
 	char	*last_slash;
 
+	if (!abs_path)
+		return (NULL);
 	last_slash = ft_strrchr(abs_path, '/');
 	if (last_slash == abs_path)
 		diff = 1;
@@ -52,48 +54,50 @@ static int	how_many_dots(char **args)
 {
 	if (ft_strcmp(args[1], ".") == 0)
 		return (1);
-	else if (ft_strcmp(args[1], "..") == 0)
+	if (ft_strcmp(args[1], "..") == 0)
 		return (2);
-	else
-		return (0);
+	return (0);
 }
 
-/*
-	this fuction go to absolute directory if it's valid.
-	If there is an error, return FAILURE.
-	cd .. goes to parent directory. Otherwise, it goes to absolute directory
-*/
-int	ms_cd(char **args)
+int	ms_cd(char **args, char ***envp)
 {
 	char	*abs_path;
 	int		error_code;
+	int		dot_case;
+	char	*old_pwd;
 
-	abs_path = NULL;
-	error_code = 0;
 	if (!args[1])
 		return (SUCCESS);
-	if (!how_many_dots(args))
+	dot_case = how_many_dots(args);
+	if (dot_case == 0)
 	{
 		error_code = cd_error_checker(args);
 		if (error_code != SUCCESS)
 			return (error_code);
 	}
-	if (how_many_dots(args) == 1)
+	if (dot_case == 1)
 		abs_path = ms_getcwd();
-	else if (how_many_dots(args) == 2)
-	{
-		abs_path = ms_getcwd();
-		abs_path = set_to_parent_dir(abs_path);
-	}
+	else if (dot_case == 2)
+		abs_path = set_to_parent_dir(ms_getcwd());
 	else
 		abs_path = ft_strdup(args[1]);
 	if (!abs_path)
 		return (FAILURE);
-	if (chdir(abs_path) == -1)
+	old_pwd = ms_getcwd();
+	if (!old_pwd)
 	{
 		free(abs_path);
 		return (FAILURE);
 	}
+	ms_setenv("OLDPWD", old_pwd, envp);
+	free(old_pwd);
+	if (chdir(abs_path) == -1)
+	{
+		perror("minishell: cd");
+		free(abs_path);
+		return (FAILURE);
+	}
 	free(abs_path);
+	ms_setenv("PWD", ms_getcwd(), envp);
 	return (SUCCESS);
 }

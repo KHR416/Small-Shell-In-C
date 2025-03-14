@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:58:20 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/27 08:53:47 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/14 16:32:09 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	exec_builtin(char **argv, t_msvar *var)
 			return (ms_echo(argv));
 	}
 	if (ft_strcmp("cd", argv[0]) == 0)
-		return (ms_cd(argv));
+		return (ms_cd(argv, &var->envp));
 	if (ft_strcmp("export", argv[0]) == 0)
 		return (ms_export(argv, var));
 	if (ft_strcmp("unset", argv[0]) == 0)
