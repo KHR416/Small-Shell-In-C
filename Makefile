@@ -55,6 +55,7 @@ SRC := \
 	tokenizer_1.c \
 	generic_array.c \
 	token_list.c \
+	ms_export_utils.c \
 	$(SRC_DEBUG)
 
 OBJ := $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))

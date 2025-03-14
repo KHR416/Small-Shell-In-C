@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:55:53 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/14 16:29:39 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/14 20:51:42 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,4 +26,6 @@ int	ms_exit(char **args, t_msvar *var);
 int	ms_unset(char **args, t_msvar *var);
 int	is_builtin(char *cmd);
 int	exec_builtin(char **argv, t_msvar *var);
+int	is_valid_arg(char *str);
+
 #endif

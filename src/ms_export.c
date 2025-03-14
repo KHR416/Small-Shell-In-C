@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 15:54:05 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/01 17:06:11 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/14 21:24:39 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ static void	print_all_env(t_msvar *var)
 int	ms_export(char **args, t_msvar *var)
 {
 	char	*first_line;
-	char	*second_line;
+	char	*second_line; 
 	int		i;
 
 	i = 1;
@@ -96,6 +96,14 @@ int	ms_export(char **args, t_msvar *var)
 	{
 		while (args[i] != NULL)
 		{
+			if (!is_valid_arg(args[i]))
+			{
+				ft_putstr_fd("minishell: export: `", 2);
+				ft_putstr_fd(args[i], 2);
+				ft_putstr_fd("`: not a valid identifier\n", 2);
+				++i;
+				continue ;
+			}
 			first_line = get_first_line(args[i]);
 			second_line = get_second_line(args[i]);
 			if (!first_line || !second_line)
