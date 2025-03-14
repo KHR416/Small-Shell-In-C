@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/14 16:28:37 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/14 16:45:06 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,26 @@
 
 static int	cd_error_checker(char **args)
 {
+	char *path;
+
+	path = args[1];
 	if (args[2])
 	{
-		printf("minishell: cd: too many arguments\n");
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		return (FAILURE);
 	}
 	if (access(args[1], F_OK) == -1)
 	{
-		printf("minishell: cd: %s: No such file or directory\n", args[1]);
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		return (127);
 	}
 	if (access(args[1], R_OK) == -1)
 	{
-		printf("minishell: cd: %s: Permission denied\n", args[1]);
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": Permission denied\n", 2);
 		return (126);
 	}
 	return (SUCCESS);
