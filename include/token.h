@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:08:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/07 22:46:52 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/16 00:36:00 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ typedef enum e_token_type
 typedef struct s_token
 {
 	t_token_type	type;
-	void			*data;
+	char			*data;
 	void 			(*del_func)(void *);
 }	t_token;
 
@@ -44,6 +44,7 @@ typedef struct s_token_stream
 	t_token	*arr;
 	size_t	len;
 	size_t	cap;
+	size_t	offset;
 }	t_token_stream;
 
 typedef enum e_quote_mode
@@ -58,7 +59,6 @@ void			destroy_token_stream(t_token_stream *stream);
 int				realloc_token_stream(t_token_stream *stream, size_t new_cap);
 int				append_token_stream(t_token_stream *stream, t_token_type type, char *data);
 char			*get_env_name(char *str);
-size_t			expand_dollar_sign(t_buf *buf, char *str, t_msvar *msvar);
 t_token_stream	*tokenizer_arr(char *str, t_msvar *msvar);
 void			print_error_unexpected_token(t_token_type t);
 
@@ -73,8 +73,13 @@ t_token_node	*create_token_node(t_token_type type, void *data, void (*del_func)(
 t_token_list	*create_token_list(void);
 void			destroy_token_list(t_token_list *list);
 int				append_token_list(t_token_list *list, t_token_type type, void *data, void (*del_func)(void *));
+int				tokenizer_arr_append(t_token_stream *stream, char *str, t_msvar *msvar);
+int				read_and_append(t_token_stream *stream, t_msvar *msvar);
+int				is_valid(t_token_stream *stream, t_msvar *msvar);
+int				is_logical_operator(t_token_type type);
 
 t_token_list	*tokenizer_list(char *str, t_msvar *msvar);
+int	is_ceu(t_token_type type);
 # ifdef DEBUG
 
 void	print_token(t_token *t);

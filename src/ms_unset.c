@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ms_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 21:23:36 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/01 21:16:08 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/14 18:24:58 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
 
-int	find_env(char *env_str, char **envp)
+char	**find_env(char *env_str, char **envp)
 {
 	size_t	str_len;
 	int		i;
@@ -22,47 +22,30 @@ int	find_env(char *env_str, char **envp)
 	while (envp[i] != NULL)
 	{
 		if (strncmp(env_str, envp[i], str_len) == 0 && envp[i][str_len] == '=')
-			return (SUCCESS);
+			return (envp + i);
 		++i;
 	}
-	return (FAILURE);
-}
-
-void	ms_env_unset(char **envp, char *to_free)
-{
-	size_t	str_len;
-	int		i;
-	int		j;
-
-	i = 0;
-	while (envp[i] != NULL)
-	{
-		str_len = ft_strlen(to_free);
-		if (strncmp(to_free, envp[i], str_len) == 0 && \
-		envp[i][str_len] == '=')
-		{
-			free(envp[i]);
-			j = i;
-			while (envp[j] != NULL)
-			{
-				envp[j] = envp[j + 1];
-				++j;
-			}
-		}
-		else
-			++i;
-	}
+	return (NULL);
 }
 
 int	ms_unset(char **args, t_msvar *var)
 {
-	int	i;
+	int		i;
+	char	**hit;
 
 	i = 1;
+	size_t	envp_len = 0;
+	while (var->envp[envp_len])
+		++envp_len;
 	while (args[i] != NULL)
 	{
-		if (find_env(args[i], var->envp) == SUCCESS)
-			ms_env_unset(var->envp, args[i]);
+		hit = find_env(args[i], var->envp);
+		if (hit)
+		{
+			free(*hit);
+			ft_memmove(hit, hit + 1, (envp_len - (hit - var->envp)) * sizeof(char *));
+			--envp_len;
+		}
 		++i;
 	}
 	return (SUCCESS);

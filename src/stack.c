@@ -6,6 +6,11 @@ t_stack	*create_stack(void)
 	return (create_gen_arr());
 }
 
+void	destroy_stack(t_stack *s, void (del_func)(void *))
+{
+	destroy_gen_arr(s, del_func);
+}
+
 int	is_empty_stack(t_stack *s)
 {
 	if (s->length == 0)

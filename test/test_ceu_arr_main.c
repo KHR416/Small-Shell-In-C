@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <sys/wait.h>
-#include <unistd.h>
 #include "token.h"
 #include "astree.h"
 #include "minishell.h"
+#include "generic_array.h"
 
 int	main(int argc, char **argv, char **envp)
 {
 	char			*str = NULL;
 	t_token_stream	*ts = NULL;
 	t_msvar			msvar;
+	t_ceu			**ceu_arr;
 
 	ms_var_init(argc, argv, envp, &msvar);
 	while (1)
@@ -29,14 +29,18 @@ int	main(int argc, char **argv, char **envp)
 		free(str);
 		if (!ts)
 			continue ;
-		msvar.ps = create_pipe_seg_arr(ts->arr, ts->arr + ts->len);
-		destroy_token_stream(ts);
-		if (!msvar.ps)
+		if (!is_valid(ts, &msvar))
+		{
+			destroy_token_stream(ts);
 			continue ;
-		msvar.exit_status = pipe_seg_exec(msvar.ps, &msvar);
-		destroy_pipe_seg(msvar.ps);
-		msvar.ps = NULL;
-		fprintf(stderr, "PS exited with %d\n", msvar.exit_status);
+		}
+		ts->offset = 0;
+		ceu_arr = create_ceu_arr(ts);
+		destroy_token_stream(ts);
+		if (!ceu_arr)
+			continue ;
+		print_ceu_arr(ceu_arr);
+		destroy_void_arr((void **)ceu_arr, destroy_ceu);
 	}
 	clear_msvar(&msvar);
 	return (EXIT_SUCCESS);

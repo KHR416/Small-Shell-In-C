@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/14 16:45:06 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/15 23:32:27 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int	how_many_dots(char **args)
 	return (0);
 }
 
-int	ms_cd(char **args, char ***envp)
+int	ms_cd(char **args, char ***envp, t_buf *buf)
 {
 	char	*abs_path;
 	int		error_code;
@@ -83,20 +83,20 @@ int	ms_cd(char **args, char ***envp)
 			return (error_code);
 	}
 	if (dot_case == 1)
-		abs_path = ms_getcwd();
+		abs_path = ms_getcwd(buf);
 	else if (dot_case == 2)
-		abs_path = set_to_parent_dir(ms_getcwd());
+		abs_path = set_to_parent_dir(ms_getcwd(buf));
 	else
 		abs_path = ft_strdup(args[1]);
 	if (!abs_path)
 		return (FAILURE);
-	old_pwd = ms_getcwd();
+	old_pwd = ms_getcwd(buf);
 	if (!old_pwd)
 	{
 		free(abs_path);
 		return (FAILURE);
 	}
-	ms_setenv("OLDPWD", old_pwd, envp);
+	ms_setenv("OLDPWD", old_pwd, envp, buf);
 	free(old_pwd);
 	if (chdir(abs_path) == -1)
 	{
@@ -105,6 +105,6 @@ int	ms_cd(char **args, char ***envp)
 		return (FAILURE);
 	}
 	free(abs_path);
-	ms_setenv("PWD", ms_getcwd(), envp);
+	ms_setenv("PWD", ms_getcwd(buf), envp, buf);
 	return (SUCCESS);
 }

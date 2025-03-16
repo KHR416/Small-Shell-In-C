@@ -7,6 +7,7 @@
 #include "token.h"
 #include "astree.h"
 #include "minishell.h"
+#include "generic_array.h"
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -29,14 +30,14 @@ int	main(int argc, char **argv, char **envp)
 		free(str);
 		if (!ts)
 			continue ;
-		msvar.ps = create_pipe_seg_arr(ts->arr, ts->arr + ts->len);
+		msvar.ceu_arr = (void **)create_ceu_arr(ts, &msvar);
 		destroy_token_stream(ts);
-		if (!msvar.ps)
+		if (!msvar.ceu_arr)
 			continue ;
-		msvar.exit_status = pipe_seg_exec(msvar.ps, &msvar);
-		destroy_pipe_seg(msvar.ps);
-		msvar.ps = NULL;
-		fprintf(stderr, "PS exited with %d\n", msvar.exit_status);
+		msvar.exit_status = ceu_arr_exec((t_ceu **)msvar.ceu_arr, &msvar);
+		destroy_void_arr(msvar.ceu_arr, destroy_ceu);
+		msvar.ceu_arr = NULL;
+		fprintf(stderr, "ceu arr exited with %d\n", msvar.exit_status);
 	}
 	clear_msvar(&msvar);
 	return (EXIT_SUCCESS);

@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/07 23:10:25 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/11 18:52:54 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,5 +76,19 @@ int	print_ceu(t_ceu *ceu)
 	if (print_argv(ceu->argv))
 		return (FAILURE);
 	return (SUCCESS);
+}
+
+void	print_ceu_arr(t_ceu	**ceu_arr)
+{
+	size_t	i;
+
+	i = 0;
+	while (ceu_arr[i])
+	{
+		if (i)
+			fprintf(stderr, "=========PIPE=========\n");
+		print_ceu(ceu_arr[i]);
+		++i;
+	}
 }
 #endif

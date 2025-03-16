@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 15:50:57 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/06 19:47:16 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/15 23:30:20 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,16 @@
 #include "minishell.h"
 #include "buffer.h"
 
-static char	*create_new_env(char *name, char *value)
+static char	*create_new_env(char *name, char *value, t_buf *buf)
 {
-	t_buf	*buf;
-
-	buf = create_buf();
-	if (!buf)
-		return (NULL);
+	clear_buf(buf);
 	cat_buf(buf, name);
 	if (value)
 	{
 		append_buf(buf, '=');
 		cat_buf(buf, value);
 	}
-	return (detach_buf(buf));
+	return (ft_strdup(buf->buffer));
 }
 
 static int	is_valid_name(char *name)
@@ -78,7 +74,7 @@ characters or starts with a digit, it is considered invalid.
 In the case that `value` is `NULL`, it will clear the equal sign and its value
 if the env is exist or will export env name without the equal sign and value.
 */
-int	ms_setenv(char *name, char *value, char ***envp)
+int	ms_setenv(char *name, char *value, char ***envp, t_buf *buf)
 {
 	size_t	env_name_len;
 	size_t	envp_idx;
@@ -102,7 +98,7 @@ int	ms_setenv(char *name, char *value, char ***envp)
 			return (FAILURE);
 		(*envp)[envp_idx + 1] = NULL;
 	}
-	temp = create_new_env(name, value);
+	temp = create_new_env(name, value, buf);
 	if (!temp)
 		return (FAILURE);
 	if ((*envp)[envp_idx])

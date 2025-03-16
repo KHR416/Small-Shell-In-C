@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/27 07:26:16 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/15 21:38:55 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,99 +17,243 @@
 #include <stdlib.h>
 #include <libft.h>
 #include <stdio.h>
+#include "generic_array.h"
 
 t_ast	*create_ast_node(void)
 {
-	t_ast	*node;
-
-	node = malloc(sizeof(t_ast));
-	if (!node)
-		return (NULL);
-	ft_memset(node, 0, sizeof(t_ast));
-	return (node);
+	return (ft_calloc(1, sizeof(t_ast)));
 }
+
+void	destroy_pipe_seg_wrap(void *ps);
 
 void	destroy_ast_node(t_ast *node)
 {
 	if (!node)
 		return ;
-	// Only pipe_seg exist for mandatory
 	if (node->type == NODE_CEU)
-		destroy_ceu(node->data->ceu);
-	else if (node->type == NODE_PIPE_SEG)
-		destroy_pipe_seg(node->data->pipe_seg);
-	else
-	{
-		// For bonus.
-	}
-	free(node->data);
+		destroy_ceu(node->data[0].ceu);
+	// It deletes ceu, but doesn't do for another AST.
+	// Because ceu is inferior to an AST, an AST isn't inferior to other AST.
 	free(node);
 }
 
-// int	search_ast(t_ast *root, int order, int (*func)())
-// {
-// 	if (!root)
-// 		return (SUCCESS);
-// 	// TODO: create post-order DFS
-// 	if (order == 0)	// CFLAG dummy. remove it later.
-// 		return (FAILURE);
-// 	else
-// 		func(root);
-// 	return (SUCCESS);
-// }
+int is_operator_node(t_node_type type)
+{
+	return (type == NODE_PIPE || type == NODE_AND || type == NODE_OR);
+}
+
+int is_operator_token(t_token_type type)
+{
+	return (type == TOKEN_PIPE || type == TOKEN_AND_OPERATOR || type == TOKEN_OR_OPERATOR);
+}
 
 void	destroy_ast(t_ast *root)
 {
-	// Only one pipe_seg exist for mandatory.
+	if (!root)
+		return ;
+	if (is_operator_node(root->type))
+	{
+		destroy_ast(root->data[0].ast);
+		destroy_ast(root->data[1].ast);
+	}
 	destroy_ast_node(root);
+}
+
+int	is_token_test(t_token_type type)
+{
+	return (is_ceu(type) || type == TOKEN_PIPE || type == TOKEN_AND_OPERATOR || type == TOKEN_OR_OPERATOR);
+}
+
+#include "stack.h"
+
+int	op_cmp(t_node_type type1, t_node_type type2)
+{
+	if (type1 == type2)
+		return (0);
+	if (type1 == NODE_PIPE && (type2 == NODE_AND || type2 == NODE_OR))
+		return (1);
+	return (-1);
 }
 
 t_ast	*analyzer(t_token_stream *ts)
 {
-	// TODO: create ast
-	// lexicon priority: '\', "'> '&&, ||' > '|' > '>, >>, <, <<'
-	// syntax priority: suffix > prefix
-	t_ast			*root;
+	// Priority : Higher <- '(, )' / '>, >>, <, <<, command' / '|' / '&&, ||' -> Lower
+	t_stack	*s_operand = create_stack();
+	t_stack	*s_operator = create_stack();
+	t_ast	*temp_ast;
+	t_ast	ast_parenthesis_open;
 
-	root = create_ast_node();
-	if (!root)
-		return (NULL);
-	if (pipe_seg_len(ts->arr, ts->arr + ts->len) == 0)
-		root->type = NODE_CEU;
-	else
-		root->type = NODE_PIPE_SEG;
-	root->data = malloc(sizeof(t_ast_node_data));
-	if (!root->data)
+	ast_parenthesis_open.type = NODE_PARANTHESIS_OPEN;
+	while (ts->arr[ts->offset].type != TOKEN_NONE)
 	{
-		free(root);
-		return (NULL);
+		if (is_ceu(ts->arr[ts->offset].type))
+		{
+			temp_ast = create_ast_node();
+			if (!temp_ast)
+			{
+				// Exception
+			}
+			temp_ast->type = NODE_CEU;
+			temp_ast->data[0].ceu = create_ceu_from_stream(ts);
+			if (!temp_ast->data[0].ceu)
+			{
+				// Exception
+			}
+			stack_push(s_operand, temp_ast, NULL);
+		}
+		else if (is_operator_token(ts->arr[ts->offset].type))
+		{
+			temp_ast = create_ast_node();
+			if (!temp_ast)
+			{
+				// Exception
+			}
+			if (ts->arr[ts->offset].type == TOKEN_PIPE)
+				temp_ast->type = NODE_PIPE;
+			else if (ts->arr[ts->offset].type == TOKEN_AND_OPERATOR)
+				temp_ast->type = NODE_AND;
+			else
+				temp_ast->type = NODE_OR;
+			t_ast	*top_operator, *top_operand;
+			while (s_operator->length)
+			{
+				top_operator = stack_top(s_operator);
+				if (op_cmp(top_operator->type, temp_ast->type) < 0)
+					break ;
+				stack_pop(s_operator, NULL);
+
+				top_operand = stack_top(s_operand);
+				stack_pop(s_operand, NULL);
+				top_operator->data[1].ast = top_operand;
+
+				top_operand = stack_top(s_operand);
+				stack_pop(s_operand, NULL);
+				top_operator->data[0].ast = top_operand;
+
+				stack_push(s_operand, top_operator, NULL);
+			}
+			stack_push(s_operator, temp_ast, NULL);
+			++ts->offset;
+		}
+		else
+		{
+			if (ts->arr[ts->offset].type == TOKEN_PARENTHESIS_OPEN)
+			{
+				stack_push(s_operator, &ast_parenthesis_open, NULL);
+				++ts->offset;
+			}
+			else
+			{
+				t_ast	*top_operator, *top_operand;
+				while (1)
+				{
+					top_operator = stack_top(s_operator);
+					if (top_operator->type == NODE_PARANTHESIS_OPEN)
+					{
+						stack_pop(s_operator, NULL);
+						break ;
+					}
+					stack_pop(s_operator, NULL);
+
+					top_operand = stack_top(s_operand);
+					stack_pop(s_operand, NULL);
+					top_operator->data[1].ast = top_operand;
+
+					top_operand = stack_top(s_operand);
+					stack_pop(s_operand, NULL);
+					top_operator->data[0].ast = top_operand;
+
+					stack_push(s_operand, top_operator, NULL);
+				}
+				++ts->offset;
+			}
+		}
 	}
-	if (root->type == NODE_CEU)
-		root->data->ceu = create_ceu(ts->arr, ts->arr + ts->len);
-	else
-		root->data->pipe_seg = create_pipe_seg(ts->arr, ts->arr + ts->len);
-	if ((root->type == NODE_CEU && !root->data->ceu) || (root->type != NODE_CEU && !root->data->pipe_seg))
+	t_ast	*top_operator, *top_operand;
+	while (s_operator->length)
 	{
-		free(root->data);
-		free(root);
-		return (NULL);
+		top_operator = stack_top(s_operator);
+		stack_pop(s_operator, NULL);
+
+		top_operand = stack_top(s_operand);
+		stack_pop(s_operand, NULL);
+		top_operator->data[1].ast = top_operand;
+
+		top_operand = stack_top(s_operand);
+		stack_pop(s_operand, NULL);
+		top_operator->data[0].ast = top_operand;
+
+		stack_push(s_operand, top_operator, NULL);
 	}
-	return (root);
+	destroy_stack(s_operator, NULL);
+	temp_ast = stack_top(s_operand );
+	stack_pop(s_operand, NULL);
+	destroy_stack(s_operand, NULL);
+	return (temp_ast);
 }
 
-int	ast_traversal(t_ast *node, t_msvar *msvar)
+#include <sys/wait.h>
+int	ast_traversal(t_ast *node, t_msvar *msvar, int pipe_flag)
 {
 	if (node->type == NODE_CEU)
+		return (ceu_exec(node->data[0].ceu, msvar, pipe_flag));
+	if (node->type == NODE_PIPE)
 	{
-		int exit_status = ceu_exec(node->data->ceu, msvar, 0);
-		restore_ttydup(msvar);
+		int	pipefd[2];
+		if (pipe(pipefd) < 0)
+		{
+			// Exception
+		}
+		pid_t	cpid_left = fork();
+		if (cpid_left < 0)
+		{
+			// Exception
+		}
+		if (!cpid_left)
+		{
+			close(pipefd[0]);
+			dup2(pipefd[1], STDOUT_FILENO);
+			close(pipefd[1]);
+			int exit_status = ast_traversal(node->data[0].ast, msvar, 1);
+			clear_msvar(msvar);
+			exit(exit_status);
+		}
+		
+		pid_t	cpid_right = fork();
+		if (cpid_right < 0)
+		{
+			// Exception
+		}
+		if (!cpid_right)
+		{
+			close(pipefd[1]);
+			dup2(pipefd[0], STDIN_FILENO);
+			close(pipefd[0]);
+			int exit_status = ast_traversal(node->data[1].ast, msvar, 1);
+			clear_msvar(msvar);
+			exit(exit_status);
+		}
+		close(pipefd[0]);
+		close(pipefd[1]);
+		int	wstatus;
+		waitpid(cpid_left, NULL, 0);
+		waitpid(cpid_right, &wstatus, 0);
+		if (WIFSIGNALED(wstatus))
+			return (128 + WTERMSIG(wstatus));
+		return (WEXITSTATUS(wstatus));
+	}
+	else if (node->type == NODE_AND || node->type == NODE_OR)
+	{
+		int	exit_status = ast_traversal(node->data[0].ast, msvar, 0);
+		if ((node->type == NODE_AND && exit_status == EXIT_SUCCESS) || (node->type == NODE_OR && exit_status != EXIT_SUCCESS))
+			return (ast_traversal(node->data[1].ast, msvar, 0));
+		// TODO:
+		// Delete temp file for right ast node.
 		return (exit_status);
 	}
-	else if (node->type == NODE_PIPE_SEG)
-		return(pipe_seg_exec(node->data->pipe_seg, msvar));
-	else // if (node->type == NODE_LOGI)
+	else
 	{
-		// For bouns
+		// Exception
+		return (EXIT_FAILURE);
 	}
-	return (EXIT_SUCCESS);
 }

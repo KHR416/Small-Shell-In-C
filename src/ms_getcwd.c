@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_getcwd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 22:53:55 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/07 20:24:11 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/15 23:34:03 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,27 +44,17 @@ to avoid memory leaks.
 If an error occurs during buffer allocation or reallocation, the function
 ensures that all allocated resources are properly freed before returning `NULL`.
 The function may return `NULL` if the buffer size exceeds the range of `size_t`
-and not fitted null-terminated string if last reallocation fails.
+and not fitted null-terminated string if last reallocation fail
+s.
 */
-char	*ms_getcwd(void)
+char	*ms_getcwd(t_buf *buf)
 {
-	t_buf	*buf;
-
-	buf = create_buf();
-	if (!buf)
-		return (NULL);
 	while (!getcwd(buf->buffer, buf->capacity))
 	{
 		if (buf->capacity > (size_t)(-1) >> 1)
-		{
-			destroy_buf(buf);
 			return (NULL);
-		}
 		if (realloc_buf(buf, buf->capacity << 1))
-		{
-			destroy_buf(buf);
 			return (NULL);
-		}
 	}
-	return (detach_buf(buf));
+	return (ft_strdup(buf->buffer));
 }

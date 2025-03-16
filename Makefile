@@ -56,6 +56,8 @@ SRC := \
 	generic_array.c \
 	token_list.c \
 	ms_export_utils.c \
+  is_valid.c \
+	stack.c \
 	$(SRC_DEBUG)
 
 OBJ := $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))

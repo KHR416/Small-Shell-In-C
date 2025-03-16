@@ -21,7 +21,7 @@ int	main(int argc, char **argv, char **envp)
 		free(str);
 		if (ts->len)
 		{
-			ps = create_pipe_seg(ts->arr, ts->arr + ts->len);
+			ps = create_pipe_seg_arr(ts->arr, ts->arr + ts->len);
 			print_pipe_seg(ps);
 			destroy_pipe_seg(ps);
 		}

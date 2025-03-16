@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 21:23:33 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/14 15:40:10 by chakim           ###   ########.fr       */
+/*   Updated: 2025/03/16 00:25:09 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int	ms_exit(char **args, t_msvar *msvar)
 	int		exit_status;
 
 	i = 0;	
-	ft_putendl_fd("exit", STDERR_FILENO);
+	if (isatty(STDIN_FILENO) && isatty(STDOUT_FILENO))
+		ft_putendl_fd("exit", STDERR_FILENO);
 	
 	if (args[1] == NULL)
 	{

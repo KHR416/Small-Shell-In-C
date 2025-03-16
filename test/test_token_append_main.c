@@ -8,7 +8,7 @@
 int	main(int argc, char **argv, char **envp)
 {
 	char			*str;
-	t_token_stream	*ts;
+	t_token_stream	*ts = create_token_stream();
 	t_msvar			msvar;
 
 	ms_var_init(argc, argv, envp, &msvar);
@@ -22,14 +22,13 @@ int	main(int argc, char **argv, char **envp)
 			free(str);
 			continue ;
 		}
-		ts = tokenizer_arr(str, &msvar);
+		tokenizer_arr_append(ts, str, &msvar);
 		free(str);
-		if (!ts)
-			continue;
-		if (is_valid(ts, &msvar))
-			print_token_stream(ts);
-		destroy_token_stream(ts);
+		while (ts->arr[ts->len - 1].type == TOKEN_PIPE || ts->arr[ts->len - 1].type == TOKEN_AND_OPERATOR || ts->arr[ts->len - 1].type == TOKEN_OR_OPERATOR)
+			read_and_append(ts, &msvar);
+		print_token_stream(ts);
 	}
+	destroy_token_stream(ts);
 	clear_msvar(&msvar);
 	return (EXIT_SUCCESS);
 }

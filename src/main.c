@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#ifndef MEMCHECK
+# include <readline/readline.h>
+# include <readline/history.h>
+#else
+# include <string.h>
+#endif
 #include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -38,34 +42,27 @@ void	print_warning_heredoc_eof(char *delimiter)
 	ft_putendl_fd("`)", STDERR_FILENO);
 }
 
-int	next_name_buf(t_buf *buf)
+#define TMP_FILE_TEMPLATE ".tmp_here_doc_file_"
+
+int	set_temp_file_name(t_buf *buf, size_t n)
 {
-	size_t	i = buf->length - 1;
+	clear_buf(buf);
+	cat_buf(buf, TMP_FILE_TEMPLATE);
+	size_t	temp = n;
 	while (1)
 	{
-		if (ft_isdigit(buf->buffer[i]))
-		{
-			if ('0' <= buf->buffer[i] && buf->buffer[i] < '9')
-			{
-				++buf->buffer[i];
-				return (SUCCESS);
-			}
-			else
-			{
-				buf->buffer[i] = '0';
-				--i;
-			}
-		}
-		else
-		{
-			++i;
-			buf->buffer[i] = '1';
-			return (append_buf(buf, '0'));
-		}
+		temp = n / 10;
+		if (!temp)
+			break ;
+		append_buf(buf, n / temp + '0');
+		n -= 10 * temp;
 	}
+	append_buf(buf, n + '0');
+	return (SUCCESS);
 }
+
 #ifdef MEMCHECK
-char	*readline(const char *prompt)
+static char	*readline(const char *prompt)
 {
 	char	buf[1024];
 	printf("%s", prompt);
@@ -77,83 +74,59 @@ char	*readline(const char *prompt)
 }
 #endif
 
-int	process_here_doc_redirection(t_buf *buf, t_in_redir **ir_it)
+int	process_here_doc_redirec(t_msvar *msvar, char **delimeter)
 {
-	while (*ir_it)
+	set_temp_file_name(msvar->buf, msvar->heredoc_count);
+	int	fd = open(msvar->buf->buffer, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+	while (1)
 	{
-		if ((*ir_it)->type == IR_DEFAULT)
-			++ir_it;
-		else if ((*ir_it)->type == IR_HERE_DOC)
+		char	*str = readline("> ");
+		if (!str)
 		{
-			int	fd = open(buf->buffer, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			while (1)
-			{
-				char	*str = readline("> ");
-				if (!str)
-				{
-					print_warning_heredoc_eof((*ir_it)->name);
-					break ;
-				}
-				else if (!ft_memcmp(str, (*ir_it)->name, ft_strlen((*ir_it)->name)))
-				{
-					free(str);
-					break ;
-				}
-				write(fd, str, ft_strlen(str));
-				free(str);
-				ft_putchar_fd('\n', fd);
-			}
-			close(fd);
-			free((*ir_it)->name);
-			(*ir_it)->name = strdup(buf->buffer);
-			if (!(*ir_it)->name)
-			{
-				// Exception!
-			}
-			if (next_name_buf(buf))
-			{
-				// Exception!
-			}
-			++ir_it;
+			print_warning_heredoc_eof(*delimeter);
+			break ;
 		}
-		else
+		else if (!ft_strcmp(str, *delimeter))
 		{
-			// Exception!
+			free(str);
+			break ;
 		}
+		write(fd, str, ft_strlen(str));
+		free(str);
+		ft_putchar_fd('\n', fd);
 	}
+	close(fd);
+	free(*delimeter);
+	*delimeter = ft_strdup(msvar->buf->buffer);
+	++msvar->heredoc_count;
 	return (SUCCESS);
 }
 
-int	process_here_doc_recursive(t_ast *node, t_buf *buf)
+int	process_here_doc(t_token_stream *stream, t_msvar *msvar)
 {
-	if (node->type == NODE_CEU)
+	while (stream->arr[stream->offset].type != TOKEN_NONE)
 	{
-		process_here_doc_redirection(buf, node->data->ceu->ir_arr);
-		return (SUCCESS);
-	}
-	else if (node->type == NODE_PIPE_SEG) // or CEU
-	{
-		t_list	*pipe_it = node->data->pipe_seg->ceu_list;
-		while (pipe_it)
+		if (stream->arr[stream->offset].type == TOKEN_HERE_DOC)
 		{
-			process_here_doc_redirection(buf, ((t_ceu *)(pipe_it->content))->ir_arr);
-			pipe_it = pipe_it->next;
+			++stream->offset;
+			process_here_doc_redirec(msvar, &stream->arr[stream->offset].data);
 		}
-		return (SUCCESS);
+		++stream->offset;
 	}
-	// else if (node->type == NODE_LOGIC) <- Post-order DFS
-	// else <- Exception!
+	stream->offset = 0;
 	return (SUCCESS);
 }
 
-int	process_here_doc(t_ast *ast)
-{
-	t_buf	*buf;
+#include <errno.h>
 
-	buf = create_buf();
-	cat_buf(buf, ".tmp_here_doc_file_0");
-	process_here_doc_recursive(ast, buf);
-	destroy_buf(buf);
+int	remove_temp_files(t_msvar *msvar)
+{
+	for (size_t i = 0; i < msvar->heredoc_count; ++i)
+	{
+		set_temp_file_name(msvar->buf, i);
+		unlink(msvar->buf->buffer);
+	}
+	errno = 0;
 	return (SUCCESS);
 }
 
@@ -166,7 +139,8 @@ void	ms_loop(t_msvar *msvar)
 	{
 		ms_signal = 0;
 		update_sigaction_interactive();
-		str = rl_gets();
+		clear_buf(msvar->command_buf);
+		str = readline(MS_PROMPT);
 		if (ms_signal == SIGINT)
 			msvar->exit_status = 128 + SIGINT;
 		if (!str)
@@ -176,25 +150,41 @@ void	ms_loop(t_msvar *msvar)
 			free(str);
 			continue ;
 		}
-		ts = tokenizer_arr(str, msvar);
-		free(str);
+		ts = create_token_stream();
 		if (!ts)
 			continue ;
+		tokenizer_arr_append(ts, str, msvar);
+		free(str);
+		if (!is_valid(ts, msvar))
+		{
+			destroy_token_stream(ts);
+			#ifndef MEMCHECK
+			add_history(msvar->command_buf->buffer);
+			#endif
+			msvar->exit_status = 2;
+			continue ;
+		}
+		#ifndef MEMCHECK
+		add_history(msvar->command_buf->buffer);
+		#endif
+		process_here_doc(ts, msvar);
 		msvar->ast = analyzer(ts);
 		destroy_token_stream(ts);
 		if (!msvar->ast)
 			continue ;
-		process_here_doc(msvar->ast);
 		update_sigaction_control();
-		msvar->exit_status = ast_traversal(msvar->ast, msvar);
+		msvar->exit_status = ast_traversal(msvar->ast, msvar, 0);
+		restore_ttydup(msvar);
 		destroy_ast(msvar->ast);
+		remove_temp_files(msvar);
+		msvar->heredoc_count = 0;
 		msvar->ast = NULL;
 	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_msvar				msvar;
+	t_msvar	msvar;
 
 	print_banner();
 	ms_var_init(argc, argv, envp, &msvar);

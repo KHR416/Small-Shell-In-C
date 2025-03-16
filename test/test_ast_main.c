@@ -29,11 +29,18 @@ int	main(int argc, char **argv, char **envp)
 		free(str);
 		if (!ts)
 			continue ;
+		if (!is_valid(ts, &msvar))
+		{
+			destroy_token_stream(ts);
+			continue ;
+		}
+		ts->offset = 0;
 		msvar.ast = analyzer(ts);
 		destroy_token_stream(ts);
 		if (!msvar.ast)
 			continue ;
-		msvar.exit_status = ast_traversal(msvar.ast, &msvar);
+		msvar.exit_status = ast_traversal(msvar.ast, &msvar, 0);
+		restore_ttydup(&msvar);
 		fprintf(stderr, "AST exited with %d\n", msvar.exit_status);
 		destroy_ast(msvar.ast);
 		msvar.ast = NULL;

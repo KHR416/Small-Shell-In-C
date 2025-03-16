@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:25:10 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/07 23:08:40 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/14 20:29:17 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,9 @@ void		destroy_argv(char **argv);
 void		destroy_ceu(void *ceu);
 t_ceu		*create_ceu(t_token *iter_begin, t_token *iter_end);
 int			ceu_exec(t_ceu *ceu, t_msvar *msvar, int flag_pipe_seg);
+t_ceu		*create_ceu_from_stream(t_token_stream *stream);
+t_ceu		**create_ceu_arr(t_token_stream *stream);
+int			ceu_arr_exec(t_ceu **ceu_arr, t_msvar *msvar);
 
 # ifdef DEBUG
 
@@ -70,5 +73,6 @@ int			print_ir_arr(t_in_redir **ir_arr);
 int			print_or_arr(t_out_redir **or_arr);
 int			print_argv(char **argv);
 int			print_ceu(t_ceu *ceu);
+void		print_ceu_arr(t_ceu	**ceu_arr);
 # endif	// DEBUG
 #endif	// CEU_H

@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 16:32:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/07 23:15:58 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/15 23:28:52 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,10 +110,9 @@ void	destory_split(char **split)
 	free(split);
 }
 
-void	try_command_execve(char **argv, char **envp)
+void	try_command_execve(char **argv, char **envp, t_buf *buf)
 {
 	char	**paths;
-	t_buf	*buf;
 	size_t	i;
 
 	if (*argv[0] == '\0')
@@ -126,11 +125,7 @@ void	try_command_execve(char **argv, char **envp)
 	{
 		// Exception
 	}
-	buf = create_buf();
-	if (!buf)
-	{
-		// Exception
-	}
+	clear_buf(buf);
 	i = 0;
 	while (paths[i])
 	{
@@ -144,7 +139,6 @@ void	try_command_execve(char **argv, char **envp)
 		++i;
 	}
 	destory_split(paths);
-	destroy_buf(buf);
 }
 
 #include "ms_signal.h"
@@ -177,7 +171,7 @@ int	ceu_exec(t_ceu *ceu, t_msvar *msvar, int flag_pipe_seg)
 		if (ft_strchr(ceu->argv[0], '/'))
 			execve(ceu->argv[0], ceu->argv, msvar->envp);
 		else
-			try_command_execve(ceu->argv, msvar->envp);
+			try_command_execve(ceu->argv, msvar->envp, msvar->buf);
 		if (ft_strchr(ceu->argv[0], '/') || errno != ENOENT)
 			perror(ceu->argv[0]);
 		else
@@ -210,7 +204,7 @@ int	ceu_exec(t_ceu *ceu, t_msvar *msvar, int flag_pipe_seg)
 		if (ft_strchr(ceu->argv[0], '/'))
 			execve(ceu->argv[0], ceu->argv, msvar->envp);
 		else
-			try_command_execve(ceu->argv, msvar->envp);
+			try_command_execve(ceu->argv, msvar->envp, msvar->buf);
 		if (ft_strchr(ceu->argv[0], '/') || errno != ENOENT)
 			perror(ceu->argv[0]);
 		else

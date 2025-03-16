@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 17:06:42 by wchoe             #+#    #+#             */
-/*   Updated: 2025/02/25 16:21:13 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/09 14:59:06 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ t_token_stream	*create_token_stream(void)
 	}
 	stream->arr[0].type = TOKEN_NONE;
 	stream->len = 0;
+	stream->offset = 0;
 	stream->cap = TOKEN_STREAM_INITIAL_CAP;
 	return (stream);
 }

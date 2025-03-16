@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 19:22:59 by chakim            #+#    #+#             */
-/*   Updated: 2025/02/27 07:21:36 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/16 00:25:54 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,20 @@ int	ms_var_init(int argc, char **argv, char **envp, t_msvar *msvar)
 	#ifdef DEBUG
 	msvar->ceu = NULL;
 	msvar->ps = NULL;
+	msvar->ceu_arr = NULL;
 	#endif
 	msvar->ast = NULL;
+	msvar->heredoc_count = 0;
+	msvar->buf = create_buf();
+	if (!msvar->buf)
+	{
+		// Exception
+	}
+	msvar->command_buf = create_buf();
+	if (!msvar->command_buf)
+	{
+		// Exception
+	}
 	return (SUCCESS);
 }
 
@@ -55,6 +67,7 @@ int	restore_ttydup(t_msvar *msvar)
 		dup2(msvar->ttydup[1], STDOUT_FILENO);
 	return (SUCCESS);
 }
+#include "generic_array.h"
 
 void	clear_msvar(t_msvar *msvar)
 {
@@ -66,7 +79,13 @@ void	clear_msvar(t_msvar *msvar)
 	msvar->ceu = NULL;
 	destroy_pipe_seg(msvar->ps);
 	msvar->ps = NULL;
+	destroy_void_arr(msvar->ceu_arr, destroy_ceu);
+	msvar->ceu_arr = NULL;
 	#endif	//DEBUG
 	destroy_ast(msvar->ast);
 	msvar->ast = NULL;
+	destroy_buf(msvar->buf);
+	msvar->buf = NULL;
+	destroy_buf(msvar->command_buf);
+	msvar->command_buf = NULL;
 }
