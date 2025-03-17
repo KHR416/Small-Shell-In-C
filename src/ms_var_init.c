@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 19:22:59 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/16 00:25:54 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/17 16:42:17 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ int	ms_var_init(int argc, char **argv, char **envp, t_msvar *msvar)
 	{
 		// Exception
 	}
+	msvar->cw_backup = ms_getcwd(msvar);
+	msvar->old_cw_backp = NULL;
 	return (SUCCESS);
 }
 
@@ -88,4 +90,8 @@ void	clear_msvar(t_msvar *msvar)
 	msvar->buf = NULL;
 	destroy_buf(msvar->command_buf);
 	msvar->command_buf = NULL;
+	free(msvar->cw_backup);
+	msvar->cw_backup = NULL;
+	free(msvar->old_cw_backp);
+	msvar->old_cw_backp = NULL;
 }

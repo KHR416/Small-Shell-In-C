@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 22:53:55 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/15 23:34:03 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/17 16:40:13 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,17 @@ The function may return `NULL` if the buffer size exceeds the range of `size_t`
 and not fitted null-terminated string if last reallocation fail
 s.
 */
-char	*ms_getcwd(t_buf *buf)
+#include <errno.h>
+char	*ms_getcwd(t_msvar *msvar)
 {
-	while (!getcwd(buf->buffer, buf->capacity))
+	while (!getcwd(msvar->buf->buffer, msvar->buf->capacity))
 	{
-		if (buf->capacity > (size_t)(-1) >> 1)
+		if (errno && errno != ERANGE)
+			return (ft_strdup(msvar->cw_backup));
+		if (msvar->buf->capacity > (size_t)(-1) >> 1)
 			return (NULL);
-		if (realloc_buf(buf, buf->capacity << 1))
+		if (realloc_buf(msvar->buf, msvar->buf->capacity << 1))
 			return (NULL);
 	}
-	return (ft_strdup(buf->buffer));
+	return (ft_strdup(msvar->buf->buffer));
 }

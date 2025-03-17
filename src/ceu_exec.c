@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 16:32:23 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/15 23:28:52 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/17 14:58:47 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,7 @@ void	destory_split(char **split)
 void	try_command_execve(char **argv, char **envp, t_buf *buf)
 {
 	char	**paths;
+	char	*path_env;
 	size_t	i;
 
 	if (*argv[0] == '\0')
@@ -120,7 +121,13 @@ void	try_command_execve(char **argv, char **envp, t_buf *buf)
 		errno = ENOENT;
 		return ;
 	}
-	paths = ft_split(retrieve_path(envp), ':');
+	path_env = retrieve_path(envp);
+	if (!path_env)
+	{
+		errno = ENOENT;
+		return ;
+	}
+	paths = ft_split(path_env, ':');
 	if (!paths)
 	{
 		// Exception

@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:58:20 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/15 23:36:24 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/17 15:59:14 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	exec_builtin(char **argv, t_msvar *var)
 			return (ms_echo(argv));
 	}
 	if (ft_strcmp("cd", argv[0]) == 0)
-		return (ms_cd(argv, &var->envp, var->buf));
+		return (ms_cd(argv, var));
 	if (ft_strcmp("export", argv[0]) == 0)
 		return (ms_export(argv, var));
 	if (ft_strcmp("unset", argv[0]) == 0)
@@ -81,5 +81,5 @@ int	exec_builtin(char **argv, t_msvar *var)
 		return (ms_env(argv, var));
 	if (ft_strcmp("exit", argv[0]) == 0)
 		return (ms_exit(argv, var));
-	return (ms_pwd(var->buf));
+	return (ms_pwd(var));
 }

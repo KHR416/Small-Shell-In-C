@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:29:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/15 23:32:27 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/17 16:48:19 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,37 +25,35 @@ static int	cd_error_checker(char **args)
 	if (access(args[1], F_OK) == -1)
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
+		perror(path);
 		return (127);
 	}
 	if (access(args[1], R_OK) == -1)
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd(": Permission denied\n", 2);
+		perror(path);
 		return (126);
 	}
 	return (SUCCESS);
 }
 
-static char	*set_to_parent_dir(char *abs_path)
-{
-	char	*result;
-	size_t	diff;
-	char	*last_slash;
+// static char	*set_to_parent_dir(char *abs_path)
+// {
+// 	char	*result;
+// 	size_t	diff;
+// 	char	*last_slash;
 
-	if (!abs_path)
-		return (NULL);
-	last_slash = ft_strrchr(abs_path, '/');
-	if (last_slash == abs_path)
-		diff = 1;
-	else
-		diff = (size_t)(last_slash - abs_path);
-	result = ft_substr(abs_path, 0, diff);
-	free(abs_path);
-	return (result);
-}
+// 	if (!abs_path)
+// 		return (NULL);
+// 	last_slash = ft_strrchr(abs_path, '/');
+// 	if (last_slash == abs_path)
+// 		diff = 1;
+// 	else
+// 		diff = (size_t)(last_slash - abs_path);
+// 	result = ft_substr(abs_path, 0, diff);
+// 	free(abs_path);
+// 	return (result);
+// }
 
 static int	how_many_dots(char **args)
 {
@@ -66,12 +64,10 @@ static int	how_many_dots(char **args)
 	return (0);
 }
 
-int	ms_cd(char **args, char ***envp, t_buf *buf)
+int	ms_cd(char **args, t_msvar *msvar)
 {
-	char	*abs_path;
 	int		error_code;
 	int		dot_case;
-	char	*old_pwd;
 
 	if (!args[1])
 		return (SUCCESS);
@@ -82,29 +78,43 @@ int	ms_cd(char **args, char ***envp, t_buf *buf)
 		if (error_code != SUCCESS)
 			return (error_code);
 	}
-	if (dot_case == 1)
-		abs_path = ms_getcwd(buf);
-	else if (dot_case == 2)
-		abs_path = set_to_parent_dir(ms_getcwd(buf));
-	else
-		abs_path = ft_strdup(args[1]);
-	if (!abs_path)
-		return (FAILURE);
-	old_pwd = ms_getcwd(buf);
-	if (!old_pwd)
+	// if (dot_case == 1)
+	// 	abs_path = ms_getcwd(msvar);
+	// else if (dot_case == 2)
+	// 	abs_path = set_to_parent_dir(ms_getcwd(msvar));
+	// else
+	// 	abs_path = ft_strdup(args[1]);
+	// if (!abs_path)
+	// 	return (FAILURE);
+	clear_buf(msvar->buf);
+	if (args[1][0] == '.')
 	{
-		free(abs_path);
-		return (FAILURE);
+		cat_buf(msvar->buf, msvar->cw_backup);
+		if (dot_case == 2)
+		{
+			char	*temp = ft_strrchr(msvar->buf->buffer, '/');
+			if  (temp != msvar->buf->buffer)
+				*temp = '\0';
+			msvar->buf->length = ft_strlen(msvar->buf->buffer);
+		}
 	}
-	ms_setenv("OLDPWD", old_pwd, envp, buf);
-	free(old_pwd);
-	if (chdir(abs_path) == -1)
+	else if (args[1][0] == '/')
+		cat_buf(msvar->buf, args[1]);
+	else
+	{
+		cat_buf(msvar->buf, msvar->cw_backup);
+		append_buf(msvar->buf, '/');
+		cat_buf(msvar->buf, args[1]);
+	}
+	if (chdir(msvar->buf->buffer) == -1)
 	{
 		perror("minishell: cd");
-		free(abs_path);
 		return (FAILURE);
 	}
-	free(abs_path);
-	ms_setenv("PWD", ms_getcwd(buf), envp, buf);
+	free(msvar->old_cw_backp);
+	msvar->old_cw_backp = msvar->cw_backup;
+	msvar->cw_backup = ft_strdup(msvar->buf->buffer);
+	ms_setenv("OLDPWD", msvar->old_cw_backp, &msvar->envp, msvar->buf);
+	ms_setenv("PWD", msvar->cw_backup, &msvar->envp, msvar->buf);
 	return (SUCCESS);
 }

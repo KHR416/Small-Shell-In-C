@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 23:00:14 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/15 23:42:39 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/17 16:40:23 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,11 @@ typedef struct s_msvar
 	size_t	heredoc_count;
 	t_buf	*buf;
 	t_buf	*command_buf;
+	char	*cw_backup;
+	char	*old_cw_backp;
 }	t_msvar;
 
-char	*ms_getcwd(t_buf *buf);
+char	*ms_getcwd(t_msvar *msvar);
 char	**ms_envpcpy(char **envp);
 void	ms_envp_destroy(char **arr);
 char	*ms_getenv(char *name, char **envp);
