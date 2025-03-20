@@ -77,6 +77,39 @@ size_t	expand_dollar_sign(t_token_stream *stream, char *str, t_msvar *msvar, t_g
 	return (padding);
 }
 
+size_t	expand_dollar_sign_with_quote(char *str, t_msvar *msvar)
+{
+	char	*env_name;
+	size_t	padding;
+	char	*expanded;
+
+	++str;
+	if (*str == '?')
+	{
+		if (msvar->exit_status >= 100)
+			append_buf(msvar->buf, msvar->exit_status / 100 + '0');
+		if (msvar->exit_status >= 10)
+			append_buf(msvar->buf, msvar->exit_status / 10 % 10 + '0');
+		append_buf(msvar->buf, msvar->exit_status % 10 + '0');
+		padding = 1;
+	}
+	else if (ft_isalpha(*str) || *str == '_')
+	{
+		env_name = get_env_name(str);
+		expanded = ms_getenv(env_name, msvar->envp);
+		if (expanded)
+			cat_buf(msvar->buf, expanded);
+		padding = ft_strlen(env_name);
+		free(env_name);
+	}
+	else
+	{
+		append_buf(msvar->buf, '$');
+		padding = 0;
+	}
+	return (padding);
+}
+
 void	*ft_strdup_wrap(void *str)
 {
 	return (ft_strdup(str));
@@ -230,7 +263,7 @@ int	tokenizer_arr_append(t_token_stream *stream, char *str, t_msvar *msvar)
 			if (*str == '"')
 				mode = WITHOUT_QUOTE;
 			else if (*str == '$')
-				str += expand_dollar_sign(stream, str, msvar, arr, &flag_glob);
+				str += expand_dollar_sign_with_quote(str, msvar);
 			else
 				append_buf(msvar->buf, *str);
 			++str;
