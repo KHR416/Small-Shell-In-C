@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:55:53 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/17 15:59:32 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/22 17:05:29 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,21 @@
 # include "ms_readline.h"
 # include "minishell.h"
 
-int	ms_cd(char **args, t_msvar *msvar);
-int	ms_echo_n_option(char **args);
-int	ms_echo(char **args);
-int	ms_env(char **args, t_msvar *var);
-int	ms_export(char **args, t_msvar *var);
-int	ms_pwd(t_msvar *var);
-int	ms_exit(char **args, t_msvar *var);
-int	ms_unset(char **args, t_msvar *var);
-int	is_builtin(char *cmd);
-int	exec_builtin(char **argv, t_msvar *var);
-int	is_valid_arg(char *str);
+int		ms_cd(char **args, t_msvar *msvar);
+int		ms_echo_n_option(char **args);
+int		ms_echo(char **args);
+int		ms_env(char **args, t_msvar *var);
+int		ms_export(char **args, t_msvar *var);
+int		ms_pwd(t_msvar *var);
+int		ms_exit(char **args, t_msvar *var);
+int		ms_unset(char **args, t_msvar *var);
+int		is_builtin(char *cmd);
+int		exec_builtin(char **argv, t_msvar *var);
+int		is_valid_arg(char *str);
+int		is_equal_exist(char *str);
+char	*get_first_line(char *str);
+char	*get_second_line(char *str);
+void	print_single_env(char *env);
+int		cd_error_checker(char **args);
 
 #endif

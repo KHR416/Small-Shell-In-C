@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 23:00:14 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/17 16:40:23 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/03/21 12:51:22 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,15 @@
 #  else
 #   define MS_PROMPT	"memcheck debug$ "
 #  endif	// DEBUG
-#endif	// MEMCHECK
+# endif	// MEMCHECK
 # include "ms_glob.h"
 # include "ms_def.h"
 # include "buffer.h"
 
-extern int	ms_signal;
+// Modify it later.
+extern int	g_ms_signal;
+
+# ifndef DEBUG
 
 typedef struct s_msvar
 {
@@ -38,11 +41,6 @@ typedef struct s_msvar
 	char	**envp;
 	int		exit_status;
 	int		ttydup[2];
-	#ifdef DEBUG
-	void	*ceu;
-	void	*ps;
-	void	**ceu_arr;
-	#endif	// DEBUG
 	void	*ast;
 	size_t	heredoc_count;
 	t_buf	*buf;
@@ -50,6 +48,27 @@ typedef struct s_msvar
 	char	*cw_backup;
 	char	*old_cw_backp;
 }	t_msvar;
+
+# else
+
+typedef struct s_msvar
+{
+	int		argc;
+	char	**argv;
+	char	**envp;
+	int		exit_status;
+	int		ttydup[2];
+	void	*ast;
+	void	*ceu;
+	void	*ps;
+	void	**ceu_arr;
+	size_t	heredoc_count;
+	t_buf	*buf;
+	t_buf	*command_buf;
+	char	*cw_backup;
+	char	*old_cw_backp;
+}	t_msvar;
+# endif	// DEBUG
 
 char	*ms_getcwd(t_msvar *msvar);
 char	**ms_envpcpy(char **envp);
