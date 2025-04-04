@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ceu_exec_2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 16:20:08 by chakim            #+#    #+#             */
-/*   Updated: 2025/04/04 17:23:57 by chakim           ###   ########.fr       */
+/*   Updated: 2025/04/04 20:13:44 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,7 @@ static int	execute_normal(t_ceu *ceu, t_msvar *msvar)
 		execute_command_on_child_and_exit(ceu, msvar);
 	waitpid(cpid, &wstatus, 0);
 	if (WIFSIGNALED(wstatus))
-	{
-		if (WTERMSIG(wstatus) == SIGQUIT)
-			ft_putendl_fd("Quit (core dumped)", STDERR_FILENO);
 		return (128 + WTERMSIG(wstatus));
-	}
 	return (WEXITSTATUS(wstatus));
 }
 

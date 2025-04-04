@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_signal.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
+/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:49:40 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/30 17:51:05 by chakim           ###   ########.fr       */
+/*   Updated: 2025/04/04 20:12:08 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	update_sigaction_interactive(void)
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = sigint_handler;
 	sigaction(SIGINT, &sa, NULL);
-	sa.sa_handler = sigquit_hanlder;
+	sa.sa_handler = SIG_IGN;
 	sigaction(SIGQUIT, &sa, NULL);
 	return (SUCCESS);
 }

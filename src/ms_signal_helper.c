@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 15:30:53 by chakim            #+#    #+#             */
-/*   Updated: 2025/04/03 21:20:22 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/04/04 20:13:27 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ void	sig_handler_control(int sig)
 	g_ms_signal = sig;
 	if (sig == SIGINT)
 		printf("\n");
+	if (sig == SIGQUIT)
+		ft_putendl_fd("Quit (Core dumped)", STDERR_FILENO);
 }
 
 void	sigquit_hanlder(int sig)
