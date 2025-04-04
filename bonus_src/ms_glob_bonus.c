@@ -3,51 +3,69 @@
 /*                                                        :::      ::::::::   */
 /*   ms_glob.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 19:34:51 by chakim            #+#    #+#             */
-/*   Updated: 2025/04/03 21:13:48 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/04/04 17:43:30 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ms_glob.h"
 #include "generic_array.h"
 #include "ms_def.h"
+#include "wrapper.h"
+#include <stdlib.h>
+#include <dirent.h>
 
-int	ms_fnmatch(char **patterns, char *string)
+static int	update_string(char **string, char *pattern, int glob_flag)
 {
 	char	*matched;
-	size_t	i;
 
-	i = 0;
-	while (patterns[i])
+	if (glob_flag)
 	{
-		if (i > 0 && !*patterns[i - 1])
-		{
-			matched = ft_strnstr(string, patterns[i], ft_strlen(string));
-			if (!matched)
-				return (FAILURE);
-			string = matched + ft_strlen(patterns[i]);
-		}
-		else if (*patterns[i])
-		{
-			if (ft_strncmp(string, patterns[i], ft_strlen(patterns[i])))
-				return (FAILURE);
-			string += ft_strlen(patterns[i]);
-		}
-		++i;
+		glob_flag = 0;
+		matched = ft_strnstr(*string, pattern, ft_strlen(*string));
+		if (!matched)
+			return (FAILURE);
+		*string = matched + ft_strlen(pattern);
 	}
-	if (i > 0 && *patterns[i - 1] && *string)
-		return (FAILURE);
+	else
+	{
+		if (ft_strncmp(*string, pattern, ft_strlen(pattern)))
+			return (FAILURE);
+		*string += ft_strlen(pattern);
+	}
 	return (SUCCESS);
 }
 
-void	*my_strdup(void *str)
+static int	ms_fnmatch(char **patterns, char *string)
 {
-	return (ft_strdup(str));
+	char	*last_pat;
+	int		glob_flag;
+
+	last_pat = NULL;
+	glob_flag = 0;
+	while (*patterns)
+	{
+		if (!**patterns)
+			glob_flag = 1;
+		else
+		{
+			last_pat = *patterns;
+			if (update_string(&string, last_pat, glob_flag))
+				return (FAILURE);
+			glob_flag = 0;
+		}
+		++patterns;
+	}
+	if (glob_flag)
+		return (SUCCESS);
+	if (!ft_strcmp(string + ft_strlen(string) - ft_strlen(last_pat), last_pat))
+		return (SUCCESS);
+	return (FAILURE);
 }
 
-char	**ms_glob_helper(DIR *dir, char **patterns, int is_hidden)
+static char	**ms_glob_helper(DIR *dir, char **patterns, int is_hidden)
 {
 	struct dirent	*ent;
 	t_gen_arr		*files;
@@ -63,7 +81,7 @@ char	**ms_glob_helper(DIR *dir, char **patterns, int is_hidden)
 			continue ;
 		if (!ms_fnmatch(patterns, ent->d_name))
 		{
-			if (append_gen_arr(files, ent->d_name, my_strdup))
+			if (append_gen_arr(files, ent->d_name, ft_strdup_wrap))
 			{
 				closedir(dir);
 				destroy_gen_arr(files, free);

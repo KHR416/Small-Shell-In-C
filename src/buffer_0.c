@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buffer_0.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
+/*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 19:23:04 by wchoe             #+#    #+#             */
-/*   Updated: 2025/01/05 19:41:37 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/04/04 17:34:41 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ int	cat_buf(t_buf *buf, char *str)
 	if (buf->capacity < buf->length + len + 1)
 	{
 		new_cap = buf->capacity;
-		while (new_cap > buf->length + len + 1)
+		while (new_cap < buf->length + len + 1)
 		{
 			if (new_cap > (size_t)(-1) >> 1)
 				return (FAILURE);

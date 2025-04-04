@@ -6,7 +6,7 @@
 /*   By: chakim <chakim@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 21:23:36 by chakim            #+#    #+#             */
-/*   Updated: 2025/03/22 14:51:53 by chakim           ###   ########.fr       */
+/*   Updated: 2025/04/04 15:42:02 by chakim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ char	**find_env(char *env_str, char **envp)
 	i = 0;
 	while (envp[i] != NULL)
 	{
-		if (strncmp(env_str, envp[i], str_len) == 0 && envp[i][str_len] == '=')
+		if (ft_strncmp(env_str, envp[i], str_len) \
+		== 0 && envp[i][str_len] == '=')
 			return (envp + i);
 		++i;
 	}
