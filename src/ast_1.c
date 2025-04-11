@@ -6,7 +6,7 @@
 /*   By: wchoe <wchoe@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 13:10:31 by wchoe             #+#    #+#             */
-/*   Updated: 2025/03/21 17:17:24 by wchoe            ###   ########.fr       */
+/*   Updated: 2025/04/11 15:21:22 by wchoe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ int	is_operator_node(t_node_type type)
 
 int	op_cmp(t_node_type type1, t_node_type type2)
 {
-	if (type1 == type2)
+	if (type1 == type2
+		|| ((type1 == NODE_AND || type1 == NODE_OR)
+		&& (type2 == NODE_AND || type2 == NODE_OR)))
 		return (0);
 	if (type1 == NODE_PIPE && (type2 == NODE_AND || type2 == NODE_OR))
 		return (1);
